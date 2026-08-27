@@ -24,7 +24,10 @@
   --rule: rgba(143, 220, 242, 0.15);
   --rule-dark: rgba(143, 220, 242, 0.15);
 
-  --display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  /* Bai Jamjuree for display: a Thai technical grotesk (Cadson Demak), squarish
+     and engineered-looking, and Nano's own script heritage rather than an
+     arbitrary pick. Archivo stays for body copy. */
+  --display: 'Bai Jamjuree', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
   --body: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
   --mono: 'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   --hero-display: 'Zen Old Mincho', 'Shippori Mincho B1', serif;
@@ -129,7 +132,7 @@ a {
   font-weight: 400;
   font-size: var(--step-4);
   line-height: var(--leading-solid);
-  letter-spacing: -0.039em;
+  letter-spacing: -0.018em;
   text-transform: uppercase;
   margin: clamp(1.25rem, 3vh, 2rem) 0 0;
   max-width: 26ch;
@@ -138,7 +141,7 @@ a {
 
 .display--sm {
   font-size: var(--step-3);
-  letter-spacing: -0.03em;
+  letter-spacing: -0.012em;
   max-width: 30ch;
 }
 
@@ -1189,4 +1192,35 @@ a {
 #experience,
 #contact {
   scroll-margin-top: 56px;
+}
+
+/* ---------------- name lockup ---------------- */
+
+/* "NANO EIAMWATTANASIN" set as one display line is 19 uppercase characters at
+   5.3rem — it fills the measure, forces a bad break, and competes with the
+   hero wordmark. Split: the given name takes the display size, the surname
+   becomes a tracked label beneath it. */
+.lockup {
+  display: grid;
+  gap: 0.5rem;
+  margin: clamp(1.25rem, 3vh, 2rem) 0 0;
+}
+
+.lockup-given {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: var(--step-4);
+  line-height: var(--leading-solid);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.lockup-family {
+  font-family: var(--mono);
+  font-size: clamp(0.8rem, 0.7rem + 0.5vw, 1.05rem);
+  font-weight: 400;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-left: 0.18em;
 }

@@ -227,9 +227,12 @@ export default function Site() {
             <KoiMark />
             About
           </span>
-          <h1 className="display rise">
+          <h1 className="lockup rise">
             <span className="mask">
-              <span>Nano Eiamwattanasin</span>
+              <span className="lockup-given">Nano</span>
+            </span>
+            <span className="mask">
+              <span className="lockup-family">Eiamwattanasin</span>
             </span>
           </h1>
           <p className="lede rise">
