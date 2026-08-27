@@ -16,7 +16,7 @@
   --ink: #dceaf1;
   --muted: #7e9bb0;
   --dark: #10202f;
-  --darker: #060e16;
+  --darker: #05081a;
   --accent: #d92b18;
   --water: #4d8fbb;
   --glow: #84dcfd;
@@ -981,16 +981,16 @@ a {
   }
 }
 
-/* 2. Scanlines. The hero's ASCII pass leaves visible horizontal striping —
-      roughly a 1px line every 3px at display scale. Carrying the same pitch
-      across the page is the strongest material cue available, so it runs at a
-      strength you can actually see rather than a whisper. Two layers: the fine
-      line rhythm, plus a wider dark band that mimics the glyph rows. */
-body::after {
+/* 2. Scanlines, on the page only. The hero already carries its own striping
+      from the ASCII pass, so a global overlay would double it — this attaches
+      to the panels and the footer instead of the viewport. Two layers: the
+      fine line rhythm, plus a wider dark band mimicking the glyph rows. */
+.panel::after,
+.footer::after {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: 3;
+  z-index: 2;
   pointer-events: none;
   background:
     repeating-linear-gradient(
@@ -1018,21 +1018,30 @@ body::after {
   background: color-mix(in oklab, var(--paper) 92%, transparent);
 }
 
-/* 3. The descent, as actual depth: each panel sits deeper than the last. */
+/* 3. The descent, as hue and not just brightness. Sampling the hero gave a
+      181-214 degree spread — cyan at the lit surface through to navy in the
+      deep — so the panels walk that range and keep going into indigo. Four
+      values of one colour only ever read as one colour dimmed. */
 .panel--d1 {
-  background: color-mix(in oklab, #0d1a26 92%, transparent);
+  /* shallow: teal, still catching surface light */
+  background: color-mix(in oklab, #0c2531 92%, transparent);
 }
 
 .panel--d2 {
-  background: color-mix(in oklab, #0a1520 93%, transparent);
+  /* mid water: true blue */
+  background: color-mix(in oklab, #0a1c2e 93%, transparent);
 }
 
 .panel--d3 {
-  background: color-mix(in oklab, #091320 94%, transparent);
+  /* deeper: the blue turns over toward indigo */
+  background: color-mix(in oklab, #0b1730 94%, transparent);
+  --rule: rgba(150, 170, 245, 0.16);
 }
 
 .panel--d4 {
-  background: color-mix(in oklab, #07101a 95%, transparent);
+  /* abyss */
+  background: color-mix(in oklab, #090f24 95%, transparent);
+  --rule: rgba(160, 165, 250, 0.15);
 }
 
 /* 4. No seam: the first panel is pulled up over the video and starts
@@ -1047,14 +1056,16 @@ body::after {
   background: linear-gradient(
     180deg,
     transparent 0,
-    color-mix(in oklab, #0d1a26 55%, transparent) calc(var(--overlap) * 0.55),
-    color-mix(in oklab, #0d1a26 92%, transparent) var(--overlap)
+    color-mix(in oklab, #0c2531 55%, transparent) calc(var(--overlap) * 0.55),
+    color-mix(in oklab, #0c2531 92%, transparent) var(--overlap)
   );
 }
 
-/* fade the texture in over the overlap too, or it draws a hard edge across the
-   video where the panel begins */
-.panel--d1::before {
+/* the first panel overlaps the video, so both of its overlay layers fade in
+   across that distance — otherwise they draw over the hero, which is supposed
+   to keep only its own striping */
+.panel--d1::before,
+.panel--d1::after {
   mask-image: linear-gradient(180deg, transparent 0, #000 var(--overlap));
 }
 
