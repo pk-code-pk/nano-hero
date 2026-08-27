@@ -954,43 +954,55 @@ a {
    that happens to sit underneath it.
  * ------------------------------------------------------------------ */
 
-/* 1. Caustics. A single hero frame, blurred to 5.5KB, drifting behind
-      everything at low opacity — the same light, much further down. */
-body::before {
+/* 1. Water. Each panel carries its own frame lifted from the hero video —
+      blurred to ~17KB, screened on at low opacity, drifting slowly. A single
+      shared texture read as a flat wash; four different frames make each
+      panel its own patch of water. */
+.panel::before {
   content: '';
-  position: fixed;
-  inset: -12% -12% -12% -12%;
+  position: absolute;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: url('/caustic.jpg') center / cover no-repeat;
-  opacity: 0.16;
+  background-image: var(--water-img);
+  background-size: cover;
+  background-position: center;
+  opacity: var(--water-op, 0.16);
   mix-blend-mode: screen;
-  filter: saturate(1.1);
-  animation: drift 42s ease-in-out infinite alternate;
+  animation: drift 54s ease-in-out infinite alternate;
 }
 
 @keyframes drift {
   from {
-    transform: translate3d(-1.5%, -1%, 0) scale(1.04);
+    transform: translate3d(-1.2%, -0.8%, 0) scale(1.05);
   }
   to {
-    transform: translate3d(1.5%, 1.5%, 0) scale(1.1);
+    transform: translate3d(1.2%, 1.2%, 0) scale(1.12);
   }
 }
 
-/* 2. Grain. The hero is ASCII scanlines; carrying that 1px rhythm across
-      the page is the cheapest identity cue available. */
+/* 2. Scanlines. The hero's ASCII pass leaves visible horizontal striping —
+      roughly a 1px line every 3px at display scale. Carrying the same pitch
+      across the page is the strongest material cue available, so it runs at a
+      strength you can actually see rather than a whisper. Two layers: the fine
+      line rhythm, plus a wider dark band that mimics the glyph rows. */
 body::after {
   content: '';
   position: fixed;
   inset: 0;
-  z-index: 1;
+  z-index: 3;
   pointer-events: none;
-  background: repeating-linear-gradient(
-    180deg,
-    rgba(220, 234, 241, 0.028) 0 1px,
-    transparent 1px 3px
-  );
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(220, 234, 241, 0.055) 0 1px,
+      transparent 1px 3px
+    ),
+    repeating-linear-gradient(
+      180deg,
+      rgba(4, 10, 16, 0.16) 0 1px,
+      transparent 1px 6px
+    );
 }
 
 /* page content sits above both layers */
@@ -1040,6 +1052,12 @@ body::after {
   );
 }
 
+/* fade the texture in over the overlap too, or it draws a hard edge across the
+   video where the panel begins */
+.panel--d1::before {
+  mask-image: linear-gradient(180deg, transparent 0, #000 var(--overlap));
+}
+
 /* 5. Hero hand-off: the video drifts up as you leave it, so the seam is a
       parallax rather than a cut. */
 .pond-video {
@@ -1048,7 +1066,7 @@ body::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body::before {
+  .panel::before {
     animation: none;
   }
   .pond-video {
@@ -1108,54 +1126,11 @@ body::after {
   }
 }
 
-/* ---------------- koi field ---------------- */
-
-.koi-field {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-/* content sits above the school */
+/* content sits above each panel's water */
 .panel > .wrap,
 .footer-cols,
 .footer-meta,
 .footer-word {
   position: relative;
   z-index: 1;
-}
-
-.koi-fish {
-  position: absolute;
-  display: block;
-  transform: rotate(var(--rot)) scaleX(var(--flip));
-  animation: swim var(--dur) ease-in-out var(--delay) infinite alternate;
-  will-change: transform;
-}
-
-.koi--field {
-  width: 100%;
-  height: auto;
-  fill: var(--glow);
-  opacity: 1;
-  transition: none;
-}
-
-/* a slow drift, not a traverse: enough to read as alive, not enough to pull
-   the eye off the copy */
-@keyframes swim {
-  from {
-    transform: rotate(var(--rot)) scaleX(var(--flip)) translate3d(-2.5%, 1%, 0);
-  }
-  to {
-    transform: rotate(var(--rot)) scaleX(var(--flip)) translate3d(2.5%, -1.5%, 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .koi-fish {
-    animation: none;
-  }
 }

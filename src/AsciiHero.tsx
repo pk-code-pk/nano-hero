@@ -180,8 +180,15 @@ export default function AsciiHero({
       <directionalLight position={[200, 300, 400]} intensity={1.7} />
       <CameraFit />
       <Pond reduced={reduced} />
-      <Wordmark reduced={reduced} />
-      <KoiSchool reduced={reduced} />
+      {/* The panel water textures are captured from this same scene with the
+          subjects removed: ?nomark=1 drops the 3D type, ?nofish=1 drops the
+          school, leaving caustics, shafts and vignette — just water. */}
+      {CAPTURE && new URLSearchParams(location.search).has('nomark') ? null : (
+        <Wordmark reduced={reduced} />
+      )}
+      {CAPTURE && new URLSearchParams(location.search).has('nofish') ? null : (
+        <KoiSchool reduced={reduced} />
+      )}
       <AsciiPass />
     </Canvas>
   );

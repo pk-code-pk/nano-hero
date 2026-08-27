@@ -4,7 +4,6 @@
 import { useEffect, useRef } from 'react';
 import PondHero from './PondHero';
 import KoiMark from './KoiMark';
-import KoiField from './KoiField';
 
 type Role = {
   org: string;
@@ -226,8 +225,10 @@ export default function Site() {
       <PondHero />
 
       {/* ---- about ---- */}
-      <section className="panel panel--d1" id="about">
-        <KoiField seed={0x51a} count={5} maxOpacity={0.085} />
+      <section
+        className="panel panel--d1" id="about"
+        style={{ '--water-img': "url(/water-1.jpg)", '--water-op': 0.14 } as React.CSSProperties}
+      >
         <div className="wrap">
           <span className="eyebrow rise">
             <KoiMark />
@@ -267,8 +268,10 @@ export default function Site() {
       </section>
 
       {/* ---- work ---- */}
-      <section className="panel panel--d2" id="work">
-        <KoiField seed={0x9c4} count={4} maxOpacity={0.07} />
+      <section
+        className="panel panel--d2" id="work"
+        style={{ '--water-img': "url(/water-2.jpg)", '--water-op': 0.11 } as React.CSSProperties}
+      >
         <div className="wrap">
           <span className="eyebrow rise">
             <KoiMark />
@@ -338,8 +341,10 @@ export default function Site() {
       </section>
 
       {/* ---- experience ---- */}
-      <section className="panel panel--d3" id="experience">
-        <KoiField seed={0x2e7} count={4} maxOpacity={0.06} />
+      <section
+        className="panel panel--d3" id="experience"
+        style={{ '--water-img': "url(/water-3.jpg)", '--water-op': 0.07 } as React.CSSProperties}
+      >
         <div className="wrap">
           <span className="eyebrow rise">
             <KoiMark />
@@ -380,8 +385,10 @@ export default function Site() {
       </section>
 
       {/* ---- contact ---- */}
-      <section className="panel panel--d4" id="contact">
-        <KoiField seed={0x77b} count={3} maxOpacity={0.05} />
+      <section
+        className="panel panel--d4" id="contact"
+        style={{ '--water-img': "url(/water-4.jpg)", '--water-op': 0.07 } as React.CSSProperties}
+      >
         <div className="wrap">
           <span className="eyebrow rise">
             <KoiMark />
