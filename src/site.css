@@ -1055,3 +1055,55 @@ body::after {
     transform: none;
   }
 }
+
+/* ---------------- koi marks ---------------- */
+
+/* the same fish as the hero, traced from koiBodyShape() */
+.koi {
+  /* 24px against 11px label type: below this the silhouette reads as a dash */
+  width: 24px;
+  height: auto;
+  flex: none;
+  fill: currentColor;
+  opacity: 0.6;
+  transition: opacity var(--dur-md) var(--ease), transform var(--dur-md) var(--ease);
+}
+
+.eyebrow .koi {
+  margin-right: 0.15em;
+}
+
+/* every other section's fish faces the other way, so the marks read as a
+   school rather than a repeated icon */
+.panel--d2 .eyebrow .koi,
+.panel--d4 .eyebrow .koi {
+  transform: scaleX(-1);
+}
+
+.eyebrow:hover .koi {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+.panel--d2 .eyebrow:hover .koi,
+.panel--d4 .eyebrow:hover .koi {
+  transform: scaleX(-1) translateX(2px);
+}
+
+.koi--accent {
+  fill: var(--accent);
+  opacity: 1;
+}
+
+.footer-koi {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .koi {
+    transition: none;
+  }
+}

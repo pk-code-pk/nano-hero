@@ -3,6 +3,7 @@
 // alternating paper and dark. The hero itself is unchanged.
 import { useEffect, useRef } from 'react';
 import PondHero from './PondHero';
+import KoiMark from './KoiMark';
 
 type Role = {
   org: string;
@@ -171,7 +172,7 @@ function Footer() {
     <footer className="footer">
       <div className="footer-cols">
         <div className="footer-col footer-lede">
-          <b className="footer-tick" aria-hidden="true" />
+          <KoiMark className="koi koi--accent footer-koi" />
           {/* TODO(nano): what you're looking for, and when */}
           <p>Boston, Massachusetts.</p>
         </div>
@@ -226,7 +227,10 @@ export default function Site() {
       {/* ---- about ---- */}
       <section className="panel panel--d1" id="about">
         <div className="wrap">
-          <span className="eyebrow rise">About</span>
+          <span className="eyebrow rise">
+            <KoiMark />
+            About
+          </span>
           <h1 className="display rise">
             <span className="mask">
               <span>Nano Eiamwattanasin</span>
@@ -263,7 +267,10 @@ export default function Site() {
       {/* ---- work ---- */}
       <section className="panel panel--d2" id="work">
         <div className="wrap">
-          <span className="eyebrow rise">Selected work</span>
+          <span className="eyebrow rise">
+            <KoiMark />
+            Selected work
+          </span>
           <h2 className="display display--sm rise">
             <span className="mask">
               <span>
@@ -330,7 +337,10 @@ export default function Site() {
       {/* ---- experience ---- */}
       <section className="panel panel--d3" id="experience">
         <div className="wrap">
-          <span className="eyebrow rise">Experience</span>
+          <span className="eyebrow rise">
+            <KoiMark />
+            Experience
+          </span>
           <h2 className="display display--sm rise">
             <span className="mask">
               <span>
@@ -368,7 +378,10 @@ export default function Site() {
       {/* ---- contact ---- */}
       <section className="panel panel--d4" id="contact">
         <div className="wrap">
-          <span className="eyebrow rise">Contact</span>
+          <span className="eyebrow rise">
+            <KoiMark />
+            Contact
+          </span>
           <h2 className="display rise">
             <span className="mask">
               <span>Get in touch</span>
