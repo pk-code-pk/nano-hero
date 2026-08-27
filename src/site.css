@@ -21,6 +21,23 @@
 
   --gutter: clamp(1.25rem, 5vw, 5rem);
   --measure: 62ch;
+
+  /* Type ladder and motion, from the sstr.tech extraction in docs/reference.
+     Their scale is 85 / 43 / 28 / 21px — ratios 2.0, 1.5, 1.33 — and display
+     levels are set solid (line-height 1.0). */
+  --step-0: 0.9rem;      /* documentation copy, dense on purpose */
+  --step-1: 1.3rem;
+  --step-2: clamp(1.6rem, 1.2rem + 1.4vw, 1.75rem);
+  --step-3: clamp(1.9rem, 1.2rem + 2.6vw, 2.65rem);
+  --step-4: clamp(2.6rem, 1.2rem + 5.6vw, 5.3rem);
+  --leading-solid: 1;
+  --leading-tight: 1.14;
+
+  --dur-xs: 100ms;
+  --dur-sm: 160ms;
+  --dur-md: 300ms;
+  --dur-lg: 500ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 * {
@@ -182,7 +199,7 @@ a {
   z-index: 4;
   pointer-events: none;
   opacity: clamp(0, calc(var(--depth) * 3), 1);
-  transition: opacity 0.4s ease;
+  transition: opacity var(--dur-md) var(--ease);
 }
 
 .waterline svg {
@@ -227,8 +244,8 @@ a {
 .split .statement {
   /* hero scale belongs to a full-width statement; inside a column it just
      towers over the list it's supposed to introduce */
-  font-size: clamp(1.8rem, 1rem + 2.5vw, 3.1rem);
-  line-height: 1.1;
+  font-size: var(--step-3);
+  line-height: var(--leading-solid);
   max-width: 13ch;
   margin-bottom: 1.25rem;
 }
@@ -266,8 +283,8 @@ a {
 .statement {
   font-family: var(--display);
   font-weight: 400;
-  font-size: clamp(2.4rem, 1.1rem + 5.4vw, 5.4rem);
-  line-height: 1.06;
+  font-size: var(--step-4);
+  line-height: var(--leading-solid);
   letter-spacing: -0.022em;
   max-width: 16ch;
   margin: 0 0 clamp(1.5rem, 4vh, 2.5rem);
@@ -322,7 +339,7 @@ a {
   border-top: 1px solid rgba(77, 98, 116, 0.2);
   text-decoration: none;
   position: relative;
-  transition: border-color 0.35s ease;
+  transition: border-color var(--dur-md) var(--ease);
 }
 
 .entry:first-child {
@@ -340,7 +357,7 @@ a {
   background: var(--kohaku);
   opacity: 0;
   transform: translateY(-50%) scale(0.4);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity var(--dur-md) var(--ease), transform var(--dur-md) var(--ease);
 }
 
 .entry:hover::after,
@@ -398,7 +415,7 @@ a {
 .arrow {
   display: inline-block;
   margin-left: 0.4em;
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform var(--dur-md) var(--ease);
 }
 
 .reach a:hover .arrow {
@@ -408,10 +425,10 @@ a {
 .entry-body h3 {
   font-family: var(--display);
   font-weight: 400;
-  font-size: clamp(1.25rem, 1rem + 0.9vw, 1.75rem);
-  line-height: 1.2;
+  font-size: var(--step-2);
+  line-height: var(--leading-tight);
   margin: 0 0 0.4rem;
-  transition: color 0.3s ease;
+  transition: color var(--dur-md) var(--ease);
 }
 
 .entry:hover .entry-body h3 {
@@ -453,7 +470,7 @@ a {
   text-decoration: none;
   border-bottom: 1px solid rgba(127, 199, 232, 0.35);
   padding-bottom: 2px;
-  transition: color 0.3s ease, border-color 0.3s ease;
+  transition: color var(--dur-md) var(--ease), border-color var(--dur-md) var(--ease);
 }
 
 .reach a:hover {
@@ -481,7 +498,7 @@ a {
 .rise {
   opacity: 0;
   transform: translateY(14px);
-  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--dur-lg) var(--ease), transform var(--dur-lg) var(--ease);
 }
 
 .rise.shown {
@@ -640,7 +657,7 @@ a {
   font-size: clamp(1rem, 0.9rem + 0.4vw, 1.2rem);
   color: rgba(236, 228, 214, 0.86);
   text-decoration: none;
-  transition: color 0.25s ease;
+  transition: color var(--dur-sm) var(--ease);
 }
 
 .footer-col a:hover {
@@ -677,7 +694,7 @@ a {
   border-bottom: 1px solid rgba(127, 199, 232, 0.4);
   padding-bottom: 3px;
   justify-self: start;
-  transition: color 0.25s ease, border-color 0.25s ease;
+  transition: color var(--dur-sm) var(--ease), border-color var(--dur-sm) var(--ease);
 }
 
 .footer-mail:hover {
@@ -699,8 +716,8 @@ a {
   border-radius: 2px;
   font-family: var(--body);
   font-size: 1.1rem;
-  transition: border-color 0.25s ease, background 0.25s ease,
-    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: border-color var(--dur-sm) var(--ease),
+    background var(--dur-sm) var(--ease), transform var(--dur-sm) var(--ease);
 }
 
 .footer-top a:hover {
@@ -832,7 +849,8 @@ a {
 .cell-title {
   font-family: var(--body);
   font-weight: 500;
-  font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.35rem);
+  font-size: var(--step-1);
+  line-height: var(--leading-tight);
   letter-spacing: 0.01em;
   text-transform: uppercase;
   margin: 1.25rem 0 0.6rem;
@@ -840,7 +858,8 @@ a {
 
 .cell-body {
   margin: 0;
-  font-size: 0.92rem;
+  font-size: var(--step-0);
+  line-height: 1.5;
   color: rgba(236, 228, 214, 0.68);
   max-width: 42ch;
 }
@@ -892,8 +911,8 @@ a {
 .result-value {
   font-family: var(--body);
   font-weight: 500;
-  font-size: clamp(3.2rem, 2rem + 5vw, 6rem);
-  line-height: 0.92;
+  font-size: var(--step-4);
+  line-height: var(--leading-solid);
   letter-spacing: -0.045em;
   font-variant-numeric: tabular-nums;
   color: var(--washi);
@@ -959,7 +978,7 @@ a {
     0 100%,
     0 10px
   );
-  transition: filter 0.25s ease, transform 0.25s ease;
+  transition: filter var(--dur-sm) var(--ease), transform var(--dur-sm) var(--ease);
 }
 
 .chamfer:hover {
