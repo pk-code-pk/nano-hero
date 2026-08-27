@@ -1009,3 +1009,11 @@ a {
   text-transform: uppercase;
   color: var(--shizumi);
 }
+
+/* deliberate empty state, so a section with nothing in it doesn't read broken */
+.cell.empty {
+  border-left: 0;
+  display: grid;
+  gap: 0.9rem;
+  padding-block: clamp(2.5rem, 6vh, 4rem);
+}

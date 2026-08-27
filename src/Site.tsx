@@ -14,64 +14,9 @@ type Entry = {
   spec?: [string, string][];
 };
 
-// TODO(nano): replace with real projects. Each one wants a blurb saying what
-// you owned, a result number with how it was measured, and a few real specs.
-// The number is the point — "held 1.8 kN" beats "designed a bracket".
-const WORK: Entry[] = [
-  {
-    title: 'Project title',
-    blurb:
-      'What it is, what constraint made it hard, and what you owned end to end.',
-    meta: '2026 · manufacturing',
-    tag: 'built',
-    result: {
-      value: '-38%',
-      caption: 'Assembly time per unit',
-      delta: '6m 20s → 3m 55s',
-    },
-    spec: [
-      ['Materials', '6061-T6, PETG'],
-      ['Process', '3-axis mill, printed fixture'],
-      ['Tolerance', '±0.05 mm'],
-      ['Owned', 'Design, fixture, line trial'],
-    ],
-  },
-  {
-    title: 'Project title',
-    blurb:
-      'A test rig, a linkage, a fixture. What you measured and how close the model got.',
-    meta: '2025 · design for manufacture',
-    tag: 'shipped',
-    result: {
-      value: '1.8 kN',
-      caption: 'Held at failure, 12% over spec',
-      delta: 'Predicted 1.6 kN',
-    },
-    spec: [
-      ['Analysis', 'Static FEA, hand-checked'],
-      ['Validation', 'Instron pull to failure'],
-      ['Iterations', '3'],
-      ['Owned', 'CAD, analysis, test plan'],
-    ],
-  },
-  {
-    title: 'Project title',
-    blurb:
-      'Research or coursework belongs here too, as long as something got built and measured.',
-    meta: '2025 · test and validation',
-    tag: 'in test',
-    result: {
-      value: '0.4 mm',
-      caption: 'Repeatability across 50 cycles',
-      delta: 'Target 1.0 mm',
-    },
-    spec: [
-      ['Instrumentation', 'Dial indicator, load cell'],
-      ['Cycles', '50'],
-      ['Owned', 'Rig design, data reduction'],
-    ],
-  },
-];
+// Real cases go here. Until then the section says so — placeholder specs that
+// look like real data ("1.8 kN at failure") read as a filled-in template.
+const WORK: Entry[] = [];
 
 // TODO(nano): trim to what you'd defend in an interview.
 const CAPABILITIES: {
@@ -81,7 +26,7 @@ const CAPABILITIES: {
 }[] = [
   {
     title: 'Design',
-    body: 'Solid modelling, GD&T, tolerance stacks, and DFM reviews before anything gets cut.',
+    body: 'Solid modelling, GD&T, tolerance stacks, DFM review.',
     figure: (
       <svg className="cell-figure" viewBox="0 0 120 90" aria-hidden="true">
         <rect x="18" y="22" width="66" height="46" />
@@ -92,7 +37,7 @@ const CAPABILITIES: {
   },
   {
     title: 'Manufacturing',
-    body: 'Fixturing, process documentation, and the revisions that come after a part fails in assembly.',
+    body: 'Fixturing, process documentation, assembly and line support.',
     figure: (
       <svg className="cell-figure" viewBox="0 0 120 90" aria-hidden="true">
         <path d="M14 68h92" />
@@ -104,7 +49,7 @@ const CAPABILITIES: {
   },
   {
     title: 'Test',
-    body: 'Instrumented rigs, failure analysis, and revising the part until the data agrees with the model.',
+    body: 'Instrumented test rigs, data reduction, failure analysis.',
     figure: (
       <svg className="cell-figure" viewBox="0 0 120 90" aria-hidden="true">
         <path d="M20 74V16M20 74h84" />
@@ -260,7 +205,7 @@ function Band({
 }
 
 const NAV: [string, string][] = [
-  ['What I do', '#about'],
+  ['About', '#about'],
   ['Selected work', '#work'],
   ['Experience', '#experience'],
   ['Reach', '#reach'],
@@ -281,10 +226,8 @@ function Footer() {
       <div className="footer-cols">
         <div className="footer-col footer-lede">
           <b className="footer-tick" aria-hidden="true" />
-          <p>
-            Open to co-op and full-time mechanical engineering roles, starting
-            2027.
-          </p>
+          {/* TODO(nano): what you're actually looking for, and when */}
+          <p>Boston, Massachusetts.</p>
           <a className="footer-mail" href="mailto:hello@example.com">
             hello@example.com
           </a>
@@ -350,21 +293,17 @@ export default function Site() {
       <Waterline />
 
       <main className="shell">
-        <Band label="What I do" id="about">
+        <Band label="About" id="about">
           <div className="split">
-            <h1 className="statement rise">
-              Mechanical design that <i>survives contact with</i> the{' '}
-              <em>factory floor</em>.
-            </h1>
+            <h1 className="statement rise">Nano Eiamwattanasin</h1>
             <p className="prose rise">
-            {/* TODO(nano): rewrite in your own voice — what you're working on
-                at Bevi, and what you want to build next. */}
-            I'm a mechanical engineering student at Northeastern, doing research
-            at the Kostas Research Institute and the Transformative Robotics
-            Lab. Before that I spent six months as a manufacturing engineer
-            co-op at Bevi, where the drawing meets the line: fixtures,
-            tolerance stacks, DFM reviews, and the unglamorous revisions that
-            come after something fails in assembly.
+              {/* TODO(nano): this is factual but it isn't your voice yet.
+                  Rewrite it as you'd actually describe your work. */}
+              Mechanical engineering student at Northeastern. Research
+              assistant at the Kostas Research Institute and the Transformative
+              Robotics Lab. Previously a manufacturing engineer co-op at Bevi in
+              Boston, design and CAD engineer at Give A Hand, and a mechanical
+              engineering intern at BKF Aerospace in Bangkok.
             </p>
           </div>
 
@@ -387,15 +326,25 @@ export default function Site() {
         <Band label="Selected work" id="work">
           <div className="split">
             <div>
-              <h2 className="statement rise">
-                Things I <i>designed</i>, built, and had to fix.
-              </h2>
               <p className="split-note rise">
-                Ordered by recency. Each case gives the result first — the
-                number that proves it worked — then how it was measured.
+                {WORK.length
+                  ? 'Ordered by recency. Each case gives the result first, then how it was measured.'
+                  : 'Not published yet.'}
               </p>
             </div>
           </div>
+
+          {WORK.length === 0 ? (
+            <div className="rules rise">
+              <div className="cell empty">
+                <span className="eyebrow">Awaiting content</span>
+                <p className="cell-body">
+                  Cases go here: what the thing is, what Nano owned, and the
+                  measured result.
+                </p>
+              </div>
+            </div>
+          ) : null}
 
           {WORK.map((w, i) => (
             <div className="rules case rise" key={i}>
@@ -445,15 +394,11 @@ export default function Site() {
           ))}
         </Band>
 
-        <Band label="Where I've worked" id="experience">
+        <Band label="Experience" id="experience">
           <div className="split">
             <div>
-              <h2 className="statement rise">
-                Research labs, a <i>factory floor</i>, and a design bench.
-              </h2>
               <p className="split-note rise">
-                Three of these are current. The co-op at Bevi is where I learned
-                what a drawing costs once it reaches assembly.
+                Reverse chronological. Three roles are current.
               </p>
             </div>
             <div className="work">
@@ -481,9 +426,7 @@ export default function Site() {
 
         <Band label="Reach" id="reach">
           <div className="mark rise" aria-hidden="true" />
-          <h2 className="statement rise">
-            Building something that <i>has to hold</i> together?
-          </h2>
+          <h2 className="statement rise">Get in touch</h2>
           <div className="reach rise">
             {/* TODO(nano): real links */}
             <a href="mailto:hello@example.com">
