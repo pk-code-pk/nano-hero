@@ -40,32 +40,13 @@ export default function PondHero() {
     if (optedIn) video.current?.play().catch(() => {});
   }, [optedIn]);
 
-  const caption = (
-    <>
-      <div className="pond-veil" aria-hidden="true" />
-      <div className="pond-caption">
-        <span className="pond-role">
-          Mechanical engineering · Northeastern
-        </span>
-        <p className="pond-line">
-          Robotics research at Northeastern. Six months on Bevi's manufacturing
-          floor before that.
-        </p>
-      </div>
-      <a className="pond-scroll" href="#work">
-        <i />
-        Descend
-      </a>
-    </>
-  );
-
   if (LIVE) {
     return (
       <section className="pond" aria-label="Koi pond">
         <Suspense fallback={null}>
           <AsciiHero reduced={!!reduced} />
         </Suspense>
-        {caption}
+        <div className="pond-veil" aria-hidden="true" />
       </section>
     );
   }
@@ -110,7 +91,7 @@ export default function PondHero() {
         </button>
       ) : null}
 
-      {caption}
+      <div className="pond-veil" aria-hidden="true" />
     </section>
   );
 }

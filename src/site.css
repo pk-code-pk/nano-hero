@@ -568,9 +568,7 @@ a {
     transform: none;
     transition: none;
   }
-  .pond-scroll i {
-    animation: none;
-  }
+  
 }
 
 /* ---------------- pond ---------------- */
@@ -609,62 +607,12 @@ a {
   }
 }
 
-.pond-caption {
-  position: absolute;
-  left: var(--gutter);
-  bottom: clamp(1.5rem, 5vh, 3rem);
-  z-index: 3;
-  display: grid;
-  gap: 0.35rem;
-  max-width: 34ch;
-}
 
-.pond-role {
-  /* mincho, same face as the display type — the mono reads as UI chrome, and
-     this line is a byline, not a label. Opacity treatment stays. */
-  font-family: var(--hero-display);
-  font-size: clamp(0.9rem, 0.85rem + 0.2vw, 1.05rem);
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  color: rgba(236, 228, 214, 0.66);
-}
 
-.pond-line {
-  font-family: var(--hero-display);
-  font-size: clamp(1.05rem, 0.9rem + 0.6vw, 1.4rem);
-  line-height: 1.4;
-  color: rgba(236, 228, 214, 0.94);
-  text-wrap: balance;
-}
 
-.pond-scroll {
-  position: absolute;
-  right: var(--gutter);
-  bottom: clamp(1.5rem, 5vh, 3rem);
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(236, 228, 214, 0.6);
-  text-decoration: none;
-}
 
-.pond-scroll i {
-  display: block;
-  width: 1px;
-  height: 34px;
-  background: linear-gradient(180deg, rgba(236, 228, 214, 0.7), transparent);
-  animation: sink 2.6s ease-in-out infinite;
-}
 
-@keyframes sink {
-  0%, 100% { transform: scaleY(0.55); transform-origin: top; opacity: 0.45; }
-  50%      { transform: scaleY(1);    transform-origin: top; opacity: 1; }
-}
+
 
 
 /* the video fills the pond and centres its own source */
@@ -702,13 +650,6 @@ a {
 .pond-play:hover {
   border-color: var(--accent);
   color: var(--accent);
-}
-
-/* the hero's caption sits on video, so it keeps light-on-dark values */
-.pond-role,
-.pond-line,
-.pond-scroll {
-  color: rgba(239, 240, 241, 0.9);
 }
 
 .pond-veil {
@@ -906,19 +847,6 @@ a {
   transform: none;
 }
 
-/* the pond's caption arrives after the video has a frame up */
-.pond-caption,
-.pond-scroll {
-  animation: surface 900ms var(--ease) both;
-  animation-delay: 500ms;
-}
-
-@keyframes surface {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-}
 
 @media (prefers-reduced-motion: reduce) {
   .progress,
@@ -937,10 +865,6 @@ a {
   .mask > span {
     transform: none;
     transition: none;
-  }
-  .pond-caption,
-  .pond-scroll {
-    animation: none;
   }
   .row:hover .row-title,
   .row:hover .row-index {
@@ -1070,9 +994,15 @@ a {
 }
 
 /* 5. Hero hand-off: the video drifts up as you leave it, so the seam is a
-      parallax rather than a cut. */
+      parallax rather than a cut.
+      The video is oversized and anchored above its box, because the drift has
+      to stay inside that slack — scale(1.06) gave ~24px of headroom against a
+      shift that reached 280px, so the video slid off its own container and left
+      a hard edge with flat ground below it. */
 .pond-video {
-  transform: translate3d(0, calc(var(--hero-shift, 0) * -1px), 0) scale(1.06);
+  height: 118%;
+  top: -9%;
+  transform: translate3d(0, calc(var(--hero-shift, 0) * -1px), 0);
   will-change: transform;
 }
 
@@ -1144,4 +1074,119 @@ a {
 .footer-word {
   position: relative;
   z-index: 1;
+}
+
+/* ---------------- nav ---------------- */
+
+/* after oimachi.co: no bar, just pills. Nothing paints a strip across the top,
+   so the hero stays uninterrupted. */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 10px clamp(10px, 1.4vw, 18px);
+  pointer-events: none;
+}
+
+.nav-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  pointer-events: auto;
+}
+
+.nav-mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 24px;
+  margin-right: 3px;
+}
+
+.koi--nav {
+  width: 26px;
+  height: auto;
+  fill: var(--ink);
+  opacity: 0.85;
+}
+
+.nav-mark:hover .koi--nav {
+  fill: var(--accent);
+  opacity: 1;
+}
+
+.pill {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink);
+  background: rgba(8, 18, 28, 0.5);
+  border: 1px solid rgba(220, 234, 241, 0.22);
+  border-radius: 3px;
+  padding: 5px 9px 4px;
+  line-height: 1.1;
+  backdrop-filter: blur(6px);
+  transition: background var(--dur-sm) var(--ease),
+    border-color var(--dur-sm) var(--ease), color var(--dur-sm) var(--ease);
+}
+
+/* :hover is one class + one pseudo-class, so it outranks .pill--on no matter
+   what order they appear in — an unscoped hover put dark text back on a dark
+   background and made the active label vanish */
+.pill:not(.pill--on):not(.pill--accent):hover {
+  border-color: rgba(220, 234, 241, 0.55);
+  background: rgba(12, 26, 40, 0.7);
+}
+
+/* the current section inverts, as it does on the reference */
+.pill--on,
+.pill--on:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #08131d;
+}
+
+.pill--on:hover {
+  filter: brightness(1.06);
+}
+
+.pill--accent {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff1ed;
+}
+
+.pill--accent:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  filter: brightness(1.1);
+}
+
+@media (max-width: 640px) {
+  .pill {
+    font-size: 0.6rem;
+    padding: 4px 7px 3px;
+  }
+  .nav-mark {
+    width: 24px;
+  }
+  .koi--nav {
+    width: 21px;
+  }
+}
+
+/* anchor targets clear the fixed pills instead of landing under them */
+#about,
+#experience,
+#contact {
+  scroll-margin-top: 56px;
 }

@@ -4,6 +4,7 @@
 import { useEffect, useRef } from 'react';
 import PondHero from './PondHero';
 import KoiMark from './KoiMark';
+import Nav from './Nav';
 
 type Role = {
   org: string;
@@ -36,23 +37,12 @@ const EXPERIENCE: Role[] = [
   { org: 'Society of Women Engineers', role: 'Project lead', period: '2023 — 2024' },
 ];
 
-// Real cases go here. Until then the section says so — placeholder specs that
-// look like real data read as a filled-in template.
-type Entry = {
-  title: string;
-  blurb: string;
-  meta: string;
-  tag: string;
-  href?: string;
-  result?: { value: string; caption: string; delta?: string };
-  spec?: [string, string][];
-};
-const WORK: Entry[] = [];
-
+// Each box names the role it comes from — the titles are Nano's own, so the
+// claims are checkable rather than generic capability copy.
 const CAPABILITIES: { title: string; body: string; figure: React.ReactNode }[] = [
   {
     title: 'Design',
-    body: 'Solid modelling, GD&T, tolerance stacks, DFM review.',
+    body: 'Design and CAD engineer at Give A Hand. Solid modelling, drawings, and the revisions that follow a build.',
     figure: (
       <svg className="figure" viewBox="0 0 120 90" aria-hidden="true">
         <rect x="18" y="22" width="66" height="46" />
@@ -63,7 +53,7 @@ const CAPABILITIES: { title: string; body: string; figure: React.ReactNode }[] =
   },
   {
     title: 'Manufacturing',
-    body: 'Fixturing, process documentation, assembly and line support.',
+    body: 'Manufacturing engineer co-op at Bevi, Boston. Fixturing, process documentation, and assembly support on the line.',
     figure: (
       <svg className="figure" viewBox="0 0 120 90" aria-hidden="true">
         <path d="M14 68h92M24 76h68" />
@@ -73,8 +63,8 @@ const CAPABILITIES: { title: string; body: string; figure: React.ReactNode }[] =
     ),
   },
   {
-    title: 'Test',
-    body: 'Instrumented test rigs, data reduction, failure analysis.',
+    title: 'Research',
+    body: 'Research assistant at the Kostas Research Institute and the Transformative Robotics Lab, Northeastern.',
     figure: (
       <svg className="figure" viewBox="0 0 120 90" aria-hidden="true">
         <path d="M20 74V16M20 74h84" />
@@ -115,10 +105,12 @@ function useReveal() {
           '--p',
           Math.min(1, Math.max(0, scrollY / max)).toFixed(4)
         );
-        // hero hand-off: the video lags the page as you scroll past it
+        // hero hand-off: the video lags the page as you scroll past it. Capped
+        // at 8% of the viewport, which is what .pond-video's extra height can
+        // absorb without the video's own edge coming into frame.
         root.style.setProperty(
           '--hero-shift',
-          Math.min(innerHeight * 0.35, scrollY * 0.28).toFixed(1)
+          Math.min(innerHeight * 0.08, scrollY * 0.16).toFixed(1)
         );
       });
     };
@@ -222,6 +214,7 @@ export default function Site() {
   return (
     <div ref={root} id="top">
       <div className="progress" aria-hidden="true" />
+      <Nav />
       <PondHero />
 
       {/* ---- about ---- */}
@@ -264,79 +257,6 @@ export default function Site() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ---- work ---- */}
-      <section
-        className="panel panel--d2" id="work"
-        style={{ '--water-img': "url(/water-2.jpg)", '--water-op': 0.11 } as React.CSSProperties}
-      >
-        <div className="wrap">
-          <span className="eyebrow rise">
-            <KoiMark />
-            Selected work
-          </span>
-          <h2 className="display display--sm rise">
-            <span className="mask">
-              <span>
-                Cases <span className="dim">— not published yet</span>
-              </span>
-            </span>
-          </h2>
-
-          {WORK.length === 0 ? (
-            <div className="cells rise" style={{ '--cols': 1 } as React.CSSProperties}>
-              <div className="cell">
-                <span className="eyebrow">Awaiting content</span>
-                <p className="cell-body" style={{ marginTop: '0.9rem' }}>
-                  Not published yet.
-                </p>
-              </div>
-            </div>
-          ) : (
-            WORK.map((w, i) => (
-              <div
-                className="cells rise"
-                key={i}
-                style={{ '--cols': 2 } as React.CSSProperties}
-              >
-                <div className="cell">
-                  <span className="eyebrow">
-                    Case {String(i + 1).padStart(2, '0')} · {w.tag}
-                  </span>
-                  <h3 className="cell-title">{w.title}</h3>
-                  <p className="cell-body">{w.blurb}</p>
-                  {w.spec ? (
-                    <dl className="spec">
-                      {w.spec.map(([k, v]) => (
-                        <div key={k}>
-                          <dt>{k}</dt>
-                          <dd>{v}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                  ) : null}
-                </div>
-                <div className="cell">
-                  {w.result ? (
-                    <div className="result">
-                      {w.result.delta ? (
-                        <span className="result-delta">{w.result.delta}</span>
-                      ) : null}
-                      <strong className="result-value">{w.result.value}</strong>
-                      <p className="result-caption">{w.result.caption}</p>
-                    </div>
-                  ) : null}
-                  {w.href ? (
-                    <a className="chamfer" href={w.href} target="_blank" rel="noreferrer">
-                      ↳ View case
-                    </a>
-                  ) : null}
-                </div>
-              </div>
-            ))
-          )}
         </div>
       </section>
 
