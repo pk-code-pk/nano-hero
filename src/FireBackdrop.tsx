@@ -73,7 +73,7 @@ const HAZE_FRAG = /* glsl */ `
   }
 `;
 
-function Haze() {
+export function Haze() {
   const mat = useRef<THREE.ShaderMaterial>(null);
   const { viewport } = useThree();
   const uniforms = useMemo(

@@ -13,7 +13,7 @@ import { BURN, IGNITE_AT, SPIN_DELAY, SPIN_DUR, SPREAD_AT, SPREAD_DUR } from './
 const EMBER = new THREE.Color('#ff6a10');
 
 // procedural conchoidal ripple normal map, generated once
-function makeWaveNormal(f1: number, f2: number, f3: number, amp: number): THREE.CanvasTexture {
+export function makeWaveNormal(f1: number, f2: number, f3: number, amp: number): THREE.CanvasTexture {
   const N = 256;
   const c = document.createElement('canvas');
   c.width = c.height = N;

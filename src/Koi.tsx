@@ -208,7 +208,7 @@ const PADS = [
   { x: 360, y: 25, r: 44, notch: 0.2, color: '#1fd455', z: -50, spin: 0.05 },
 ];
 
-function LilyPads({ reduced }: { reduced: boolean }) {
+export function LilyPads({ reduced }: { reduced: boolean }) {
   const refs = useRef<(THREE.Mesh | null)[]>([]);
   const pads = useMemo(
     () =>
@@ -310,7 +310,7 @@ const WEED_CLUMPS = [
 ];
 const WEED_GREENS = ['#17d15c', '#12b04c', '#0e8f3a'];
 
-function Seaweed({ reduced }: { reduced: boolean }) {
+export function Seaweed({ reduced }: { reduced: boolean }) {
   const items = useMemo(() => {
     const rand = (seed: number) => {
       let a = seed >>> 0;

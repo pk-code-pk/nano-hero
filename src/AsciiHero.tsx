@@ -1,7 +1,7 @@
 // Type-first ASCII hero: 3D wordmark + the traced curse-mark shards,
 // rendered as live colored ASCII. meshNormalMaterial paints surfaces by
 // orientation, so the glyph colors shift iridescent as everything moves.
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Text3D, Center } from '@react-three/drei';
 import AsciiPass from './AsciiPass';
