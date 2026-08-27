@@ -1174,7 +1174,7 @@ a {
   filter: brightness(1.1);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 700px) {
   .pill {
     font-size: 0.6rem;
     padding: 4px 7px 3px;
@@ -1184,6 +1184,15 @@ a {
   }
   .koi--nav {
     width: 21px;
+  }
+  /* the email pill goes: at 324px it fits by 21px, which collides as soon as
+     the visitor bumps their text size. The Contact section carries the same
+     address, so nothing is lost. */
+  .pill--accent {
+    display: none;
+  }
+  .nav {
+    justify-content: flex-start;
   }
 }
 
