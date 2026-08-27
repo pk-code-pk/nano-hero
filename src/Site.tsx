@@ -227,7 +227,7 @@ export default function Site() {
 
       {/* ---- about ---- */}
       <section className="panel panel--d1" id="about">
-        <KoiField seed={0x51a} count={7} maxOpacity={0.075} />
+        <KoiField seed={0x51a} count={5} maxOpacity={0.085} />
         <div className="wrap">
           <span className="eyebrow rise">
             <KoiMark />
@@ -268,7 +268,7 @@ export default function Site() {
 
       {/* ---- work ---- */}
       <section className="panel panel--d2" id="work">
-        <KoiField seed={0x9c4} count={5} maxOpacity={0.06} />
+        <KoiField seed={0x9c4} count={4} maxOpacity={0.07} />
         <div className="wrap">
           <span className="eyebrow rise">
             <KoiMark />
@@ -339,7 +339,7 @@ export default function Site() {
 
       {/* ---- experience ---- */}
       <section className="panel panel--d3" id="experience">
-        <KoiField seed={0x2e7} count={4} maxOpacity={0.05} />
+        <KoiField seed={0x2e7} count={4} maxOpacity={0.06} />
         <div className="wrap">
           <span className="eyebrow rise">
             <KoiMark />
@@ -381,7 +381,7 @@ export default function Site() {
 
       {/* ---- contact ---- */}
       <section className="panel panel--d4" id="contact">
-        <KoiField seed={0x77b} count={3} maxOpacity={0.04} />
+        <KoiField seed={0x77b} count={3} maxOpacity={0.05} />
         <div className="wrap">
           <span className="eyebrow rise">
             <KoiMark />
