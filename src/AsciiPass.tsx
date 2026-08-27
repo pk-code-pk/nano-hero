@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useControls } from './asciiControls';
+import { CAPTURE, sceneTime } from './renderClock';
 
 const CHARS = ".':-=+*#%@";
 // glyph cell aspect. Absolute size comes from the `cell` control, measured in
@@ -155,8 +156,9 @@ export default function AsciiPass() {
   const { size, gl } = useThree();
   const controls = useControls();
   const maxTex = gl.capabilities.maxTextureSize;
-  // smaller dimension, so a phone in landscape (844x390) still counts
-  const mobile = Math.min(size.width, size.height) < MOBILE_W;
+  // smaller dimension, so a phone in landscape (844x390) still counts.
+  // capture runs offline, so it always gets full quality regardless of size.
+  const mobile = !CAPTURE && Math.min(size.width, size.height) < MOBILE_W;
   const ss = mobile ? Math.min(controls.ss, MOBILE_SS) : controls.ss;
   const pending = useRef<{ x: number; y: number }[]>([]);
   const slot = useRef(0);
@@ -287,7 +289,7 @@ export default function AsciiPass() {
     material.uniforms.uBase.value = controls.base;
     material.uniforms.uFill.value = controls.fill;
     material.uniforms.uSubject.value = controls.subject;
-    const t = clock.getElapsedTime();
+    const t = sceneTime(clock.getElapsedTime());
     material.uniforms.uT.value = t;
     const rips = material.uniforms.uRip.value as THREE.Vector4[];
     while (pending.current.length) {
@@ -313,6 +315,8 @@ export default function AsciiPass() {
 
     gl.setRenderTarget(null);
     gl.render(downScene, quadCam);
+
+    if (CAPTURE) window.__renderedTime = t;
   }, 1);
 
   return null;

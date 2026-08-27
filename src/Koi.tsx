@@ -2,9 +2,10 @@
 // fins, with kohaku/showa patch overlays. Swimming = spine sine wave injected
 // into the vertex shader (amplitude grows toward the tail), fish wander on
 // lissajous paths facing their direction of travel.
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { sceneTime } from './renderClock';
 
 // ---- geometry: fish points +x (nose at +54, tail fork at -56) ----
 function koiBodyShape(): THREE.Shape {
@@ -141,7 +142,7 @@ function OneKoi({ spec, reduced }: { spec: KoiSpec; reduced: boolean }) {
   }, [spec]);
 
   useFrame(({ clock }, delta) => {
-    const t = reduced ? 0 : clock.getElapsedTime();
+    const t = sceneTime(clock.getElapsedTime(), reduced);
     uniforms.uTime.value = t;
     const g = group.current;
     if (!g) return;
@@ -172,6 +173,15 @@ function OneKoi({ spec, reduced }: { spec: KoiSpec; reduced: boolean }) {
 
     g.scale.setScalar(spec.scale);
   });
+
+  // the spine-wave shader moves vertices outside the geometry's bounds, so
+  // three.js culls these against the wrong sphere — fish pop out at the frame
+  // edges, worst in portrait where the FOV is narrow
+  useEffect(() => {
+    group.current?.traverse((o) => {
+      o.frustumCulled = false;
+    });
+  }, []);
 
   return (
     <group ref={group}>
@@ -227,7 +237,7 @@ export function LilyPads({ reduced }: { reduced: boolean }) {
     [],
   );
   useFrame(({ clock }) => {
-    const t = reduced ? 0 : clock.getElapsedTime();
+    const t = sceneTime(clock.getElapsedTime(), reduced);
     for (let i = 0; i < pads.length; i++) {
       const mesh = refs.current[i];
       if (!mesh) continue;
@@ -352,7 +362,7 @@ export function Seaweed({ reduced }: { reduced: boolean }) {
     return out;
   }, []);
   useFrame(({ clock }) => {
-    const t = reduced ? 0 : clock.getElapsedTime();
+    const t = sceneTime(clock.getElapsedTime(), reduced);
     for (const it of items) it.u.uTime.value = t;
   });
   return (
@@ -409,7 +419,7 @@ function Bubbles({ reduced }: { reduced: boolean }) {
     [],
   );
   useFrame(({ clock }) => {
-    const t = reduced ? 0 : clock.getElapsedTime();
+    const t = sceneTime(clock.getElapsedTime(), reduced);
     for (let i = 0; i < specs.length; i++) {
       const mesh = refs.current[i];
       if (!mesh) continue;

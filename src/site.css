@@ -511,3 +511,39 @@ a {
   background: var(--kohaku);
   transform: translateY(-50%);
 }
+
+.pond-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  z-index: 1;
+}
+
+/* shown when the visitor has Reduce Motion on: the loop stays paused on its
+   poster until they ask for it */
+.pond-play {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--washi);
+  background: rgba(7, 13, 20, 0.55);
+  border: 1px solid rgba(236, 228, 214, 0.45);
+  border-radius: 2px;
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+
+.pond-play:hover {
+  border-color: var(--mizu);
+  color: var(--mizu);
+}

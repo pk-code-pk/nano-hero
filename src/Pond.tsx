@@ -6,6 +6,7 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useControls } from './asciiControls';
+import { sceneTime } from './renderClock';
 
 const FRAG = /* glsl */ `
   precision highp float;
@@ -129,7 +130,7 @@ export default function Pond({ reduced }: { reduced: boolean }) {
   useFrame(({ clock, camera, size }) => {
     if (mat.current) {
       const u = mat.current.uniforms;
-      u.uT.value = reduced ? 0 : clock.getElapsedTime();
+      u.uT.value = sceneTime(clock.getElapsedTime(), reduced);
       u.uWater.value = water;
       u.uCaustics.value = caustics;
       u.uZoom.value = zoom;

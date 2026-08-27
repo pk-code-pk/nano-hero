@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import KoiSchool from './Koi';
 import Pond from './Pond';
 import { CONFIG, useControls } from './asciiControls';
+import { CAPTURE, sceneTime } from './renderClock';
 
 // index 0 keeps the original iridescent normal material; the rest tint the
 // same normal-driven gradient toward a chosen hue
@@ -90,8 +91,8 @@ function Wordmark({ reduced }: { reduced: boolean }) {
   const style =
     TEXT_COLORS[Math.min(TEXT_COLORS.length - 1, Math.max(0, Math.round(textRamp)))];
   useFrame(({ clock }) => {
-    if (!group.current || reduced) return;
-    const t = clock.getElapsedTime();
+    if (!group.current) return;
+    const t = sceneTime(clock.getElapsedTime(), reduced);
     group.current.rotation.y +=
       (Math.sin(t * 0.4) * 0.16 + pointer.x * 0.3 - group.current.rotation.y) *
       0.06;
@@ -140,8 +141,14 @@ function Wordmark({ reduced }: { reduced: boolean }) {
 function CameraFit() {
   const { camera, size } = useThree();
   useEffect(() => {
-    const narrow = Math.min(size.width, size.height) < 760;
-    camera.position.z = CONFIG.camZ * (narrow ? 1.45 : 1);
+    if (CAPTURE) {
+      // let the grabber choose framing per orientation: ?capture=1&camz=1500
+      const q = new URLSearchParams(location.search).get('camz');
+      camera.position.z = q ? Number(q) : CONFIG.camZ;
+    } else {
+      const narrow = Math.min(size.width, size.height) < 760;
+      camera.position.z = CONFIG.camZ * (narrow ? 1.45 : 1);
+    }
     camera.updateProjectionMatrix();
   }, [camera, size.width, size.height]);
   return null;
@@ -150,15 +157,17 @@ function CameraFit() {
 export default function AsciiHero({
   reduced,
   live = true,
+  dpr,
 }: {
   reduced: boolean;
   live?: boolean;
+  dpr?: number;
 }) {
   return (
     <Canvas
       className="ascii-field"
       camera={{ position: [0, 0, CONFIG.camZ], fov: 46, near: 1, far: 6000 }}
-      dpr={[1, 2]}
+      dpr={dpr ?? [1, 2]}
       gl={{ antialias: false }}
       style={{ position: 'absolute', inset: 0, zIndex: 1 }}
       resize={{ scroll: false }}
