@@ -1107,3 +1107,55 @@ body::after {
     transition: none;
   }
 }
+
+/* ---------------- koi field ---------------- */
+
+.koi-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* content sits above the school */
+.panel > .wrap,
+.footer-cols,
+.footer-meta,
+.footer-word {
+  position: relative;
+  z-index: 1;
+}
+
+.koi-fish {
+  position: absolute;
+  display: block;
+  transform: rotate(var(--rot)) scaleX(var(--flip));
+  animation: swim var(--dur) ease-in-out var(--delay) infinite alternate;
+  will-change: transform;
+}
+
+.koi--field {
+  width: 100%;
+  height: auto;
+  fill: var(--glow);
+  opacity: 1;
+  transition: none;
+}
+
+/* a slow drift, not a traverse: enough to read as alive, not enough to pull
+   the eye off the copy */
+@keyframes swim {
+  from {
+    transform: rotate(var(--rot)) scaleX(var(--flip)) translate3d(-2.5%, 1%, 0);
+  }
+  to {
+    transform: rotate(var(--rot)) scaleX(var(--flip)) translate3d(2.5%, -1.5%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .koi-fish {
+    animation: none;
+  }
+}
