@@ -109,9 +109,15 @@ function useReveal() {
       frame = requestAnimationFrame(() => {
         frame = 0;
         const max = Math.max(1, document.body.scrollHeight - innerHeight);
-        document.documentElement.style.setProperty(
+        const root = document.documentElement;
+        root.style.setProperty(
           '--p',
           Math.min(1, Math.max(0, scrollY / max)).toFixed(4)
+        );
+        // hero hand-off: the video lags the page as you scroll past it
+        root.style.setProperty(
+          '--hero-shift',
+          Math.min(innerHeight * 0.35, scrollY * 0.28).toFixed(1)
         );
       });
     };
@@ -218,7 +224,7 @@ export default function Site() {
       <PondHero />
 
       {/* ---- about ---- */}
-      <section className="panel" id="about">
+      <section className="panel panel--d1" id="about">
         <div className="wrap">
           <span className="eyebrow rise">About</span>
           <h1 className="display rise">
@@ -255,7 +261,7 @@ export default function Site() {
       </section>
 
       {/* ---- work ---- */}
-      <section className="panel panel--dark" id="work">
+      <section className="panel panel--d2" id="work">
         <div className="wrap">
           <span className="eyebrow rise">Selected work</span>
           <h2 className="display display--sm rise">
@@ -322,7 +328,7 @@ export default function Site() {
       </section>
 
       {/* ---- experience ---- */}
-      <section className="panel" id="experience">
+      <section className="panel panel--d3" id="experience">
         <div className="wrap">
           <span className="eyebrow rise">Experience</span>
           <h2 className="display display--sm rise">
@@ -360,7 +366,7 @@ export default function Site() {
       </section>
 
       {/* ---- contact ---- */}
-      <section className="panel panel--darker" id="contact">
+      <section className="panel panel--d4" id="contact">
         <div className="wrap">
           <span className="eyebrow rise">Contact</span>
           <h2 className="display rise">

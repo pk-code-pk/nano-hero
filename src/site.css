@@ -712,13 +712,13 @@ a {
 }
 
 .pond-veil {
-  background: linear-gradient(180deg, transparent, rgba(9, 19, 29, 0.9) 68%, var(--paper));
+  background: linear-gradient(180deg, transparent, rgba(9, 19, 29, 0.72) 74%, rgba(11, 22, 33, 0.9));
 }
 
 @media (max-width: 760px) {
   .pond-veil {
     height: 22dvh;
-    background: linear-gradient(180deg, transparent, rgba(9, 19, 29, 0.85) 70%, var(--paper));
+    background: linear-gradient(180deg, transparent, rgba(9, 19, 29, 0.7) 76%, rgba(11, 22, 33, 0.88));
   }
 }
 
@@ -764,12 +764,16 @@ a {
   background: var(--accent);
   transform: scaleX(0);
   transform-origin: 0 50%;
-  transition: transform var(--dur-lg) var(--ease);
+  /* draws across, then hands off to the hairline underneath — a permanent
+     accent rule on every section is far too loud */
+  transition: transform var(--dur-lg) var(--ease),
+    opacity var(--dur-md) var(--ease) var(--dur-lg);
 }
 
 .cells.shown::before,
 .rows.shown::before {
   transform: scaleX(1);
+  opacity: 0;
 }
 
 /* figures ink themselves in */
@@ -940,6 +944,114 @@ a {
   }
   .row:hover .row-title,
   .row:hover .row-index {
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+   Continuity with the hero. The video is full of moving light, grain
+   and depth; without these the page reads as a different document
+   that happens to sit underneath it.
+ * ------------------------------------------------------------------ */
+
+/* 1. Caustics. A single hero frame, blurred to 5.5KB, drifting behind
+      everything at low opacity — the same light, much further down. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -12% -12% -12% -12%;
+  z-index: 0;
+  pointer-events: none;
+  background: url('/caustic.jpg') center / cover no-repeat;
+  opacity: 0.16;
+  mix-blend-mode: screen;
+  filter: saturate(1.1);
+  animation: drift 42s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(-1.5%, -1%, 0) scale(1.04);
+  }
+  to {
+    transform: translate3d(1.5%, 1.5%, 0) scale(1.1);
+  }
+}
+
+/* 2. Grain. The hero is ASCII scanlines; carrying that 1px rhythm across
+      the page is the cheapest identity cue available. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(220, 234, 241, 0.028) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+/* page content sits above both layers */
+.panel,
+.footer,
+.pond {
+  position: relative;
+  z-index: 2;
+}
+
+/* panels are translucent so the caustics read through them */
+.panel {
+  background: color-mix(in oklab, var(--paper) 92%, transparent);
+}
+
+/* 3. The descent, as actual depth: each panel sits deeper than the last. */
+.panel--d1 {
+  background: color-mix(in oklab, #0d1a26 92%, transparent);
+}
+
+.panel--d2 {
+  background: color-mix(in oklab, #0a1520 93%, transparent);
+}
+
+.panel--d3 {
+  background: color-mix(in oklab, #091320 94%, transparent);
+}
+
+.panel--d4 {
+  background: color-mix(in oklab, #07101a 95%, transparent);
+}
+
+/* 4. No seam: the first panel is pulled up over the video and starts
+      transparent, so the hero dissolves into it instead of meeting it at an
+      edge. Its own gradient does the fade — a hard border here is exactly
+      what made the transition read as two documents. */
+.panel--d1 {
+  --overlap: clamp(90px, 16vh, 220px);
+  margin-top: calc(var(--overlap) * -1);
+  padding-top: calc(var(--overlap) + clamp(3rem, 9vh, 6.5rem));
+  border-top: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0,
+    color-mix(in oklab, #0d1a26 55%, transparent) calc(var(--overlap) * 0.55),
+    color-mix(in oklab, #0d1a26 92%, transparent) var(--overlap)
+  );
+}
+
+/* 5. Hero hand-off: the video drifts up as you leave it, so the seam is a
+      parallax rather than a cut. */
+.pond-video {
+  transform: translate3d(0, calc(var(--hero-shift, 0) * -1px), 0) scale(1.06);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
+  .pond-video {
     transform: none;
   }
 }
