@@ -1,7 +1,7 @@
 // Type-first ASCII hero: 3D wordmark + the traced curse-mark shards,
 // rendered as live colored ASCII. meshNormalMaterial paints surfaces by
 // orientation, so the glyph colors shift iridescent as everything moves.
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Text3D, Center } from '@react-three/drei';
 import AsciiPass from './AsciiPass';
@@ -135,6 +135,18 @@ function Wordmark({ reduced }: { reduced: boolean }) {
   );
 }
 
+// Vertical FOV is fixed, so a narrow portrait viewport crops the school hard
+// at both edges. Pull back to keep the pond in frame.
+function CameraFit() {
+  const { camera, size } = useThree();
+  useEffect(() => {
+    const narrow = Math.min(size.width, size.height) < 760;
+    camera.position.z = CONFIG.camZ * (narrow ? 1.45 : 1);
+    camera.updateProjectionMatrix();
+  }, [camera, size.width, size.height]);
+  return null;
+}
+
 export default function AsciiHero({
   reduced,
   live = true,
@@ -157,6 +169,7 @@ export default function AsciiHero({
       <fogExp2 attach="fog" args={['#02121e', 0.00042]} />
       <ambientLight intensity={1.35} />
       <directionalLight position={[200, 300, 400]} intensity={1.7} />
+      <CameraFit />
       <Pond reduced={reduced} />
       <Wordmark reduced={reduced} />
       <KoiSchool reduced={reduced} />

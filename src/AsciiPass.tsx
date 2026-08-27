@@ -13,8 +13,13 @@ const CELL_ASPECT = 7 / 4;
 // supersample budget: ss can ask for a huge target, so clamp the total pixel
 // count before allocating. Edge limits come from the driver at runtime — a
 // target wider than GL_MAX_TEXTURE_SIZE binds as a zero-size attachment and
-// every draw into it fails.
+// every draw into it fails, which reads as a black hero with no error.
 const MAX_PIXELS = 36e6;
+// phones can't feed a 6x supersample: at 390px wide that's a 2340x3984 target
+// plus a scene target of similar size, every frame. Coarser grain beats 3fps.
+const MOBILE_W = 760;
+const MOBILE_SS = 2;
+const MOBILE_CELL = 1.5;
 // the scene target is cols x rows, which at sub-pixel cell sizes runs far
 // larger than the supersample target
 const MAX_SCENE_PIXELS = 96e6;
@@ -150,6 +155,9 @@ export default function AsciiPass() {
   const { size, gl } = useThree();
   const controls = useControls();
   const maxTex = gl.capabilities.maxTextureSize;
+  // smaller dimension, so a phone in landscape (844x390) still counts
+  const mobile = Math.min(size.width, size.height) < MOBILE_W;
+  const ss = mobile ? Math.min(controls.ss, MOBILE_SS) : controls.ss;
   const pending = useRef<{ x: number; y: number }[]>([]);
   const slot = useRef(0);
 
@@ -169,8 +177,8 @@ export default function AsciiPass() {
   // supersample target, clamped so a maxed-out ss slider can't ask for a
   // target the GPU refuses to allocate
   const { ssW, ssH } = useMemo(() => {
-    let w = Math.max(8, Math.round(size.width * controls.ss));
-    let h = Math.max(8, Math.round(size.height * controls.ss));
+    let w = Math.max(8, Math.round(size.width * ss));
+    let h = Math.max(8, Math.round(size.height * ss));
     const edge = Math.max(w, h);
     if (edge > maxTex) {
       const f = maxTex / edge;
@@ -184,11 +192,11 @@ export default function AsciiPass() {
       h = Math.round(h * f);
     }
     return { ssW: w, ssH: h };
-  }, [size.width, size.height, controls.ss, maxTex]);
+  }, [size.width, size.height, ss, maxTex]);
 
   // glyph grid is measured in supersample px, so cell 1 + ss 4 == 1px cells
   // inside a 4x buffer, which is exactly the Chrome-at-25% configuration
-  const cellW = Math.max(0.5, controls.cell);
+  const cellW = Math.max(mobile ? MOBILE_CELL : 0.5, controls.cell);
   const cellH = cellW * CELL_ASPECT;
   const { cols, rows } = useMemo(() => {
     let c = Math.max(4, Math.floor(ssW / cellW));
