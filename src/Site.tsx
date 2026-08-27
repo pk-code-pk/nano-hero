@@ -181,16 +181,98 @@ function Band({
   );
 }
 
+const NAV: [string, string][] = [
+  ['What I do', '#about'],
+  ['Selected work', '#work'],
+  ['Experience', '#experience'],
+  ['Reach', '#reach'],
+];
+
+// TODO(nano): real URLs
+const ELSEWHERE: [string, string][] = [
+  ['LinkedIn', '#'],
+  ['GitHub', '#'],
+  ['Email', 'mailto:hello@example.com'],
+];
+
+function Footer() {
+  return (
+    <footer className="footer">
+      <div className="footer-grid" aria-hidden="true" />
+
+      <div className="footer-cols">
+        <div className="footer-col footer-lede">
+          <b className="footer-tick" aria-hidden="true" />
+          <p>
+            Open to co-op and full-time mechanical engineering roles, starting
+            2027.
+          </p>
+          <a className="footer-mail" href="mailto:hello@example.com">
+            hello@example.com
+          </a>
+        </div>
+
+        <div className="footer-col">
+          <span className="footer-label">Navigation</span>
+          <ul>
+            {NAV.map(([label, href]) => (
+              <li key={label}>
+                <a href={href}>{label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="footer-col">
+          <span className="footer-label">Elsewhere</span>
+          <ul>
+            {ELSEWHERE.map(([label, href]) => (
+              <li key={label}>
+                <a
+                  href={href}
+                  {...(href.startsWith('http')
+                    ? { target: '_blank', rel: 'noreferrer' }
+                    : {})}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="footer-col footer-top">
+          <span className="footer-label">Back to top</span>
+          <a href="#top" aria-label="Back to top">
+            ↑
+          </a>
+        </div>
+      </div>
+
+      <div className="footer-meta">
+        <span>Nano Eiamwattanasin — mechanical engineering</span>
+        <span>Hero filmed from a live koi pond render</span>
+      </div>
+
+      {/* the closing signature: lit at the top of the glyphs, sinking into the
+          deepest water at the bottom of the page */}
+      <div className="footer-word" aria-hidden="true">
+        nano
+      </div>
+    </footer>
+  );
+}
+
 export default function Site() {
   const root = useReveal();
 
   return (
-    <div ref={root}>
+    <div ref={root} id="top">
       <PondHero />
       <Waterline />
 
       <main className="shell">
-        <Band label="What I do">
+        <Band label="What I do" id="about">
           <div className="split">
             <h1 className="statement rise">
               Mechanical design that <i>survives contact with</i> the{' '}
@@ -249,7 +331,7 @@ export default function Site() {
           </div>
         </Band>
 
-        <Band label="Where I've worked">
+        <Band label="Where I've worked" id="experience">
           <div className="split">
             <div>
               <h2 className="statement rise">
@@ -283,7 +365,7 @@ export default function Site() {
           </div>
         </Band>
 
-        <Band label="Reach">
+        <Band label="Reach" id="reach">
           <div className="mark rise" aria-hidden="true" />
           <h2 className="statement rise">
             Building something that <i>has to hold</i> together?
@@ -302,11 +384,9 @@ export default function Site() {
           </div>
         </Band>
 
-        <div className="colophon">
-          <span>Nano Eiamwattanasin — mechanical engineering</span>
-          <span>Hero rendered live: koi, caustics, ASCII</span>
-        </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

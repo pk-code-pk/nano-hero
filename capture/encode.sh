@@ -6,7 +6,7 @@
 # Approach and encoder settings follow the bake rig in the portfolio repo:
 #
 #  - The loop is made in the encode, not the capture. Each job captures
-#    dur + X seconds, then assembles xfade(tail, head, X) + middle, so the
+#    dur + X seconds, then assembles middle + xfade(tail, head, X), so the
 #    <video loop> wrap point lands on blended frames and the seam is invisible
 #    no matter what the animation is doing. Don't try to match clip length to
 #    animation periods — the koi frequencies are incommensurate and it doesn't
@@ -31,7 +31,11 @@ T=$((T > 16 ? 16 : T))
 echo "$OUT: frames=$N  crossfade=${XF}f  loop=$((N - XF))f"
 mkdir -p "$(dirname "$OUT")"
 
-# three reads of the same sequence: tail, head, middle
+# three reads of the same sequence: tail, head, middle.
+# Order matters: middle plays FIRST and the crossfade sits at the END. Putting
+# the blend first means the opening 1.5s is a cross-dissolve, which reads as a
+# blur on load (and makes a soft poster frame). Either order loops seamlessly —
+# blend start follows middle's last frame, blend end leads into middle's first.
 INPUTS=(
   -framerate "$FPS" -start_number "$MID" -i "$DIR/f%05d.png"
   -framerate "$FPS" -start_number 0      -i "$DIR/f%05d.png"
@@ -43,7 +47,7 @@ FC="[0:v]trim=end_frame=$XF,setpts=PTS-STARTPTS,fps=$FPS[b];\
 [1:v]trim=end_frame=$XF,setpts=PTS-STARTPTS,fps=$FPS[a];\
 [b][a]xfade=transition=fade:duration=$X:offset=0[x];\
 [2:v]trim=end_frame=$((MID - XF)),setpts=PTS-STARTPTS,fps=$FPS[m];\
-[x][m]concat=n=2:v=1[out]"
+[m][x]concat=n=2:v=1[out]"
 
 echo "  h264…"
 ffmpeg -y -hide_banner -loglevel error "${INPUTS[@]}" \

@@ -547,3 +547,205 @@ a {
   border-color: var(--mizu);
   color: var(--mizu);
 }
+
+/* ------------------------------------------------------------------ *
+   Footer — the bottom of the descent. Deepest water, and the wordmark
+   half-submerged in it.
+ * ------------------------------------------------------------------ */
+
+.footer {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(3rem, 8vh, 5.5rem) var(--gutter) 0;
+  /* the footer is the bottom of the descent, so it has to be the darkest
+     thing on the page — not a lighter panel sitting under it */
+  background: linear-gradient(180deg, #03080f 0%, #01050a 55%, #000205 100%);
+  border-top: 1px solid rgba(77, 98, 116, 0.2);
+}
+
+/* sparse dotted cell dividers: three verticals and one horizontal. An evenly
+   repeating pattern across the whole box aggregates into a grey wash, which is
+   why this places four individual dashed rules instead. */
+.footer-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  --dash: repeating-linear-gradient(
+    180deg,
+    rgba(127, 199, 232, 0.17) 0 3px,
+    transparent 3px 10px
+  );
+  background-image:
+    var(--dash), var(--dash), var(--dash),
+    repeating-linear-gradient(
+      90deg,
+      rgba(127, 199, 232, 0.17) 0 3px,
+      transparent 3px 10px
+    );
+  background-size: 1px 100%, 1px 100%, 1px 100%, 100% 1px;
+  background-position: 26% 0, 52% 0, 78% 0, 0 64%;
+  background-repeat: no-repeat;
+}
+
+.footer-cols {
+  position: relative;
+  z-index: 1;
+  max-width: 78rem;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(0, 1fr)) auto;
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  padding-bottom: clamp(2.5rem, 7vh, 4.5rem);
+}
+
+.footer-col {
+  display: grid;
+  gap: 0.85rem;
+  align-content: start;
+}
+
+.footer-label {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--shizumi);
+}
+
+.footer-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.footer-col a {
+  font-family: var(--display);
+  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.2rem);
+  color: rgba(236, 228, 214, 0.86);
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.footer-col a:hover {
+  color: var(--mizu);
+}
+
+.footer-lede {
+  position: relative;
+  padding-top: 1.4rem;
+  max-width: 34ch;
+}
+
+/* the small square marker, echoing the section dots */
+.footer-tick {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 5px;
+  background: var(--kohaku);
+}
+
+.footer-lede p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(236, 228, 214, 0.72);
+}
+
+.footer-mail {
+  font-family: var(--display);
+  font-size: clamp(1.15rem, 1rem + 0.7vw, 1.6rem);
+  color: var(--washi);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(127, 199, 232, 0.4);
+  padding-bottom: 3px;
+  justify-self: start;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+
+.footer-mail:hover {
+  color: var(--mizu);
+  border-color: var(--mizu);
+}
+
+.footer-top {
+  justify-items: end;
+  text-align: right;
+}
+
+.footer-top a {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(236, 228, 214, 0.3);
+  border-radius: 2px;
+  font-family: var(--body);
+  font-size: 1.1rem;
+  transition: border-color 0.25s ease, background 0.25s ease,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.footer-top a:hover {
+  border-color: var(--mizu);
+  background: rgba(127, 199, 232, 0.1);
+  transform: translateY(-2px);
+}
+
+.footer-meta {
+  position: relative;
+  z-index: 1;
+  max-width: 78rem;
+  margin: 0 auto;
+  padding: 1.25rem 0 clamp(1.5rem, 5vh, 3rem);
+  border-top: 1px solid rgba(77, 98, 116, 0.2);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: var(--shizumi);
+}
+
+/* oversized wordmark, cropped by the bottom edge and fading into the deep */
+.footer-word {
+  position: relative;
+  z-index: 1;
+  font-family: var(--display);
+  font-size: clamp(5.5rem, 29vw, 26rem);
+  line-height: 0.84;
+  letter-spacing: -0.035em;
+  margin: 0 0 -0.2em;
+  /* lit from above and sinking: bright at the cap line, gone before the
+     baseline, so the letters submerge rather than getting cut off */
+  background: linear-gradient(
+    180deg,
+    rgba(248, 252, 255, 0.98) 0%,
+    rgba(186, 228, 250, 0.8) 34%,
+    rgba(90, 150, 190, 0.28) 62%,
+    rgba(10, 22, 34, 0) 86%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  user-select: none;
+}
+
+@media (max-width: 900px) {
+  .footer-cols {
+    grid-template-columns: 1fr 1fr;
+  }
+  .footer-lede {
+    grid-column: 1 / -1;
+  }
+  .footer-top {
+    justify-items: start;
+    text-align: left;
+  }
+}

@@ -18,7 +18,7 @@ FC="[0:v]trim=end_frame=$XF,setpts=PTS-STARTPTS,fps=$FPS[b];\
 [1:v]trim=end_frame=$XF,setpts=PTS-STARTPTS,fps=$FPS[a];\
 [b][a]xfade=transition=fade:duration=$X:offset=0[x];\
 [2:v]trim=end_frame=$((MID - XF)),setpts=PTS-STARTPTS,fps=$FPS[m];\
-[x][m]concat=n=2:v=1[c];[c]scale=$W:-2[out]"
+[m][x]concat=n=2:v=1[c];[c]scale=$W:-2[out]"
 
 ffmpeg -y -hide_banner -loglevel error \
   -framerate "$FPS" -start_number "$MID" -i "$DIR/f%05d.png" \
