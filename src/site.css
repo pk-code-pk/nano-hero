@@ -6,15 +6,23 @@
  * ------------------------------------------------------------------ */
 
 :root {
-  --paper: #eff0f1;
-  --ink: #0c0c0c;
-  --muted: #747576;
-  --dark: #2f3032;
-  --darker: #18191b;
-  --accent: #fe5b2a;
+  /* Sampled from the hero video itself (5 frames, quantised): water mid
+     #4d8fbb at 6.1% of pixels, light cyan #8fdcf2, deep navy #2c4d79,
+     darkest #0b1621, lightest #d1f2f2. The accent is the koi vermilion from
+     Koi.tsx — the one warm colour the hero actually contains. */
+  /* the ground is the hero's vignette end — the darkest thing in the video.
+     Panels vary only in depth from here; there is no light mode. */
+  --paper: #0b1621;
+  --ink: #dceaf1;
+  --muted: #7e9bb0;
+  --dark: #10202f;
+  --darker: #060e16;
+  --accent: #d92b18;
+  --water: #4d8fbb;
+  --glow: #84dcfd;
 
-  --rule: rgba(12, 12, 12, 0.16);
-  --rule-dark: rgba(239, 240, 241, 0.14);
+  --rule: rgba(143, 220, 242, 0.15);
+  --rule-dark: rgba(143, 220, 242, 0.15);
 
   --display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
   --body: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
@@ -60,7 +68,7 @@ body {
 
 ::selection {
   background: var(--accent);
-  color: #140302;
+  color: #fff2ee;
 }
 
 a {
@@ -82,20 +90,10 @@ a {
 
 .panel--dark {
   background: var(--dark);
-  color: var(--paper);
-  border-color: var(--rule-dark);
 }
 
 .panel--darker {
   background: var(--darker);
-  color: var(--paper);
-  border-color: var(--rule-dark);
-}
-
-.panel--dark,
-.panel--darker {
-  --rule: var(--rule-dark);
-  --muted: #a3a3a4;
 }
 
 .wrap {
@@ -365,7 +363,7 @@ a {
   margin-top: clamp(1.5rem, 4vh, 2.5rem);
   padding: 0.95rem 1.5rem;
   background: var(--accent);
-  color: #140302;
+  color: #fff1ed;
   font-family: var(--mono);
   font-size: 0.72rem;
   font-weight: 500;
@@ -420,9 +418,6 @@ a {
   position: relative;
   overflow: hidden;
   background: var(--darker);
-  color: var(--paper);
-  --rule: var(--rule-dark);
-  --muted: #a3a3a4;
   padding: clamp(3rem, 8vh, 5rem) var(--gutter) 0;
   border-top: 1px solid var(--rule-dark);
 }
@@ -528,9 +523,9 @@ a {
   margin: 0 0 -0.19em;
   background: linear-gradient(
     180deg,
-    rgba(239, 240, 241, 0.92) 0%,
-    rgba(163, 163, 164, 0.5) 46%,
-    rgba(24, 25, 27, 0) 88%
+    rgba(209, 242, 242, 0.92) 0%,
+    rgba(77, 143, 187, 0.55) 46%,
+    rgba(6, 14, 22, 0) 88%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -695,9 +690,9 @@ a {
   font-size: 0.72rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--paper);
-  background: rgba(6, 16, 25, 0.55);
-  border: 1px solid rgba(239, 240, 241, 0.45);
+  color: var(--ink);
+  background: rgba(8, 17, 26, 0.55);
+  border: 1px solid rgba(220, 234, 241, 0.45);
   padding: 0.8rem 1.3rem;
   cursor: pointer;
   backdrop-filter: blur(6px);
@@ -717,12 +712,234 @@ a {
 }
 
 .pond-veil {
-  background: linear-gradient(180deg, transparent, rgba(6, 16, 25, 0.85) 70%, var(--paper));
+  background: linear-gradient(180deg, transparent, rgba(9, 19, 29, 0.9) 68%, var(--paper));
 }
 
 @media (max-width: 760px) {
   .pond-veil {
     height: 22dvh;
-    background: linear-gradient(180deg, transparent, rgba(6, 16, 25, 0.8) 72%, var(--paper));
+    background: linear-gradient(180deg, transparent, rgba(9, 19, 29, 0.85) 70%, var(--paper));
+  }
+}
+
+/* ------------------------------------------------------------------ *
+   Motion. One idea: things are drawn, not faded in — rules extend,
+   figures ink themselves, headings clear a mask. Everything below
+   respects prefers-reduced-motion at the bottom of this file.
+ * ------------------------------------------------------------------ */
+
+/* scroll progress: a single accent hairline, the page's own measuring tape */
+.progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  z-index: 60;
+  background: var(--accent);
+  transform: scaleX(var(--p, 0));
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
+/* staggered reveal: --i is set per child in the markup */
+.rise {
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* rules draw outward from the left instead of appearing */
+.cells,
+.rows {
+  position: relative;
+}
+
+.cells::before,
+.rows::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform var(--dur-lg) var(--ease);
+}
+
+.cells.shown::before,
+.rows.shown::before {
+  transform: scaleX(1);
+}
+
+/* figures ink themselves in */
+.figure * {
+  stroke-dasharray: var(--len, 400);
+  stroke-dashoffset: var(--len, 400);
+  transition: stroke-dashoffset 900ms var(--ease);
+}
+
+.shown .figure * {
+  stroke-dashoffset: 0;
+}
+
+.shown .figure *:nth-child(2) {
+  transition-delay: 140ms;
+}
+
+.shown .figure *:nth-child(3) {
+  transition-delay: 260ms;
+}
+
+/* headings clear a mask rather than fading */
+.mask {
+  display: block;
+  overflow: hidden;
+}
+
+.mask > span {
+  display: block;
+  transform: translateY(105%);
+  transition: transform 700ms var(--ease);
+}
+
+.shown .mask > span,
+.mask.shown > span {
+  transform: none;
+}
+
+/* rows: accent marker grows, content steps aside */
+.row {
+  position: relative;
+  transition: background var(--dur-sm) var(--ease);
+}
+
+.row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  transition: transform var(--dur-sm) var(--ease);
+}
+
+.row:hover::before {
+  transform: scaleY(1);
+}
+
+.row:hover {
+  background: color-mix(in oklab, var(--accent) 5%, transparent);
+}
+
+.row-title,
+.row-index {
+  transition: transform var(--dur-sm) var(--ease), color var(--dur-sm) var(--ease);
+}
+
+.row:hover .row-title,
+.row:hover .row-index {
+  transform: translateX(10px);
+}
+
+.row:hover .row-index {
+  color: var(--accent);
+}
+
+/* cells: the divider lights up under the pointer */
+.cell {
+  position: relative;
+  transition: background var(--dur-md) var(--ease);
+}
+
+.cell::after {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: 50% 100%;
+  transition: transform var(--dur-md) var(--ease);
+}
+
+.cell:hover::after {
+  transform: scaleY(1);
+}
+
+.cell:hover {
+  background: color-mix(in oklab, var(--water) 7%, transparent);
+}
+
+/* chamfer: the fill sweeps rather than brightening */
+.chamfer {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.chamfer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--glow);
+  transform: translateY(101%);
+  transition: transform var(--dur-md) var(--ease);
+}
+
+.chamfer:hover {
+  filter: none;
+  color: #06121c;
+}
+
+.chamfer:hover::before {
+  transform: none;
+}
+
+/* the pond's caption arrives after the video has a frame up */
+.pond-caption,
+.pond-scroll {
+  animation: surface 900ms var(--ease) both;
+  animation-delay: 500ms;
+}
+
+@keyframes surface {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress,
+  .cells::before,
+  .rows::before,
+  .row::before,
+  .cell::after,
+  .chamfer::before {
+    transition: none;
+  }
+  .figure * {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    transition: none;
+  }
+  .mask > span {
+    transform: none;
+    transition: none;
+  }
+  .pond-caption,
+  .pond-scroll {
+    animation: none;
+  }
+  .row:hover .row-title,
+  .row:hover .row-index {
+    transform: none;
   }
 }

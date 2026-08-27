@@ -100,6 +100,39 @@ const ELSEWHERE: [string, string][] = [
 
 function useReveal() {
   const root = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // scroll progress hairline
+    let frame = 0;
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const max = Math.max(1, document.body.scrollHeight - innerHeight);
+        document.documentElement.style.setProperty(
+          '--p',
+          Math.min(1, Math.max(0, scrollY / max)).toFixed(4)
+        );
+      });
+    };
+    onScroll();
+    addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  useEffect(() => {
+    // each figure stroke gets its own dash length, so the ink-in finishes
+    // together instead of guessing one length for every shape
+    root.current?.querySelectorAll<SVGGeometryElement>('.figure *').forEach((n) => {
+      if (typeof n.getTotalLength !== 'function') return;
+      const len = Math.ceil(n.getTotalLength());
+      if (len) n.style.setProperty('--len', String(len));
+    });
+  }, []);
+
   useEffect(() => {
     const el = root.current;
     if (!el) return;
@@ -181,6 +214,7 @@ export default function Site() {
 
   return (
     <div ref={root} id="top">
+      <div className="progress" aria-hidden="true" />
       <PondHero />
 
       {/* ---- about ---- */}
@@ -188,7 +222,9 @@ export default function Site() {
         <div className="wrap">
           <span className="eyebrow rise">About</span>
           <h1 className="display rise">
-            Nano Eiamwattanasin
+            <span className="mask">
+              <span>Nano Eiamwattanasin</span>
+            </span>
           </h1>
           <p className="lede rise">
             {/* TODO(nano): factual, but not your voice yet. */}
@@ -201,7 +237,11 @@ export default function Site() {
 
           <div className="cells rise">
             {CAPABILITIES.map((c, i) => (
-              <div className="cell" key={c.title}>
+              <div
+                className="cell"
+                key={c.title}
+                style={{ '--i': i } as React.CSSProperties}
+              >
                 {c.figure}
                 <span className="eyebrow">
                   {String(i + 1).padStart(2, '0')} / 03
@@ -219,7 +259,11 @@ export default function Site() {
         <div className="wrap">
           <span className="eyebrow rise">Selected work</span>
           <h2 className="display display--sm rise">
-            Cases <span className="dim">— not published yet</span>
+            <span className="mask">
+              <span>
+                Cases <span className="dim">— not published yet</span>
+              </span>
+            </span>
           </h2>
 
           {WORK.length === 0 ? (
@@ -282,12 +326,20 @@ export default function Site() {
         <div className="wrap">
           <span className="eyebrow rise">Experience</span>
           <h2 className="display display--sm rise">
-            Seven roles <span className="dim">— three current</span>
+            <span className="mask">
+              <span>
+                Seven roles <span className="dim">— three current</span>
+              </span>
+            </span>
           </h2>
 
           <div className="rows rise">
             {EXPERIENCE.map((r, i) => (
-              <div className="row" key={r.org}>
+              <div
+                className="row rise"
+                key={r.org}
+                style={{ '--i': Math.min(i, 6) } as React.CSSProperties}
+              >
                 <span className="row-index">
                   {String(i + 1).padStart(2, '0')}
                 </span>
@@ -311,7 +363,11 @@ export default function Site() {
       <section className="panel panel--darker" id="contact">
         <div className="wrap">
           <span className="eyebrow rise">Contact</span>
-          <h2 className="display rise">Get in touch</h2>
+          <h2 className="display rise">
+            <span className="mask">
+              <span>Get in touch</span>
+            </span>
+          </h2>
           <a className="chamfer rise" href="mailto:hello@example.com">
             ↳ Email
           </a>
