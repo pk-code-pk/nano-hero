@@ -1,0 +1,513 @@
+/* ------------------------------------------------------------------ *
+   Ink and water. The page descends: --depth runs 0 at the surface to 1
+   in the deep, and everything cool-shifts and darkens along the way.
+ * ------------------------------------------------------------------ */
+
+:root {
+  --sumi: #070d14;
+  --slate: #0e1a24;
+  --washi: #ece4d6;
+  --mizu: #7fc7e8;
+  --kohaku: #d92b18;
+  --shizumi: #4d6274;
+
+  --depth: 0;
+
+  --display: 'Zen Old Mincho', 'Shippori Mincho B1', 'Hiragino Mincho ProN',
+    serif;
+  --body: 'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', system-ui,
+    sans-serif;
+  --mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, monospace;
+
+  --gutter: clamp(1.25rem, 5vw, 5rem);
+  --measure: 62ch;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--sumi);
+  color: var(--washi);
+  font-family: var(--body);
+  font-size: clamp(1rem, 0.96rem + 0.2vw, 1.08rem);
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* the water column the whole page sinks through */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      120% 70% at 50% -10%,
+      rgba(127, 199, 232, calc(0.14 * (1 - var(--depth)))),
+      transparent 62%
+    ),
+    linear-gradient(
+      180deg,
+      #0a1520 0%,
+      #081018 45%,
+      #04080d 100%
+    );
+}
+
+::selection {
+  background: rgba(217, 43, 24, 0.32);
+  color: #fff;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--mizu);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------------- pond ---------------- */
+
+.pond {
+  position: relative;
+  min-height: 100svh;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.pond canvas {
+  display: block;
+}
+
+/* the surface fades into the page instead of ending on a hard edge */
+.pond-veil {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 34svh;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, #0a1520 78%, var(--sumi));
+}
+
+.pond-caption {
+  position: absolute;
+  left: var(--gutter);
+  bottom: clamp(1.5rem, 5vh, 3rem);
+  z-index: 3;
+  display: grid;
+  gap: 0.35rem;
+  max-width: 34ch;
+}
+
+.pond-role {
+  /* mincho, same face as the display type — the mono reads as UI chrome, and
+     this line is a byline, not a label. Opacity treatment stays. */
+  font-family: var(--display);
+  font-size: clamp(0.9rem, 0.85rem + 0.2vw, 1.05rem);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: rgba(236, 228, 214, 0.66);
+}
+
+.pond-line {
+  font-family: var(--display);
+  font-size: clamp(1.05rem, 0.9rem + 0.6vw, 1.4rem);
+  line-height: 1.4;
+  color: rgba(236, 228, 214, 0.94);
+  text-wrap: balance;
+}
+
+.pond-scroll {
+  position: absolute;
+  right: var(--gutter);
+  bottom: clamp(1.5rem, 5vh, 3rem);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(236, 228, 214, 0.6);
+  text-decoration: none;
+}
+
+.pond-scroll i {
+  display: block;
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(180deg, rgba(236, 228, 214, 0.7), transparent);
+  animation: sink 2.6s ease-in-out infinite;
+}
+
+@keyframes sink {
+  0%, 100% { transform: scaleY(0.55); transform-origin: top; opacity: 0.45; }
+  50%      { transform: scaleY(1);    transform-origin: top; opacity: 1; }
+}
+
+/* ---------------- waterline ---------------- */
+
+.waterline {
+  position: fixed;
+  left: calc(var(--gutter) * 0.42);
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  z-index: 4;
+  pointer-events: none;
+  opacity: clamp(0, calc(var(--depth) * 3), 1);
+  transition: opacity 0.4s ease;
+}
+
+.waterline svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------------- shell ---------------- */
+
+.shell {
+  position: relative;
+  z-index: 1;
+  padding: 0 var(--gutter) clamp(4rem, 12vh, 9rem);
+}
+
+.band {
+  max-width: 78rem;
+  margin: 0 auto;
+  padding-block: clamp(4.5rem, 13vh, 9.5rem);
+  border-top: 1px solid rgba(77, 98, 116, 0.24);
+}
+
+.band:first-of-type {
+  border-top: 0;
+}
+
+.band-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+  margin-bottom: clamp(1.75rem, 4vh, 3rem);
+}
+
+/* left column carries the voice, right column carries the data */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+
+.split .statement {
+  /* hero scale belongs to a full-width statement; inside a column it just
+     towers over the list it's supposed to introduce */
+  font-size: clamp(1.8rem, 1rem + 2.5vw, 3.1rem);
+  line-height: 1.1;
+  max-width: 13ch;
+  margin-bottom: 1.25rem;
+}
+
+.split-note {
+  max-width: 44ch;
+  color: rgba(236, 228, 214, 0.62);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .split { grid-template-columns: 1fr; }
+}
+
+.band-head b {
+  width: 5px;
+  height: 5px;
+  background: var(--kohaku);
+  border-radius: 50%;
+  flex: none;
+  transform: translateY(-3px);
+}
+
+.band-head span {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--shizumi);
+}
+
+/* ---------------- statement ---------------- */
+
+.statement {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(2.4rem, 1.1rem + 5.4vw, 5.4rem);
+  line-height: 1.06;
+  letter-spacing: -0.022em;
+  max-width: 16ch;
+  margin: 0 0 clamp(1.5rem, 4vh, 2.5rem);
+  text-wrap: balance;
+}
+
+/* two tones inside one sentence: the emphasis is what drops back, not what
+   shouts — the eye finishes the line and then notices the shape of it */
+.statement em {
+  font-style: normal;
+  color: var(--mizu);
+}
+
+.statement i {
+  font-style: normal;
+  color: rgba(236, 228, 214, 0.34);
+}
+
+.prose {
+  max-width: var(--measure);
+  margin: 0 0 1.1rem;
+  color: rgba(236, 228, 214, 0.82);
+}
+
+.prose:last-child {
+  margin-bottom: 0;
+}
+
+.prose a {
+  color: var(--washi);
+  text-decoration-color: rgba(127, 199, 232, 0.55);
+  text-underline-offset: 3px;
+}
+
+.prose a:hover {
+  color: var(--mizu);
+}
+
+/* ---------------- work ---------------- */
+
+.work {
+  display: grid;
+  gap: 0;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: 3.4rem minmax(0, 1fr) auto;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  align-items: baseline;
+  padding: clamp(1.35rem, 3vh, 2rem) 0;
+  border-top: 1px solid rgba(77, 98, 116, 0.2);
+  text-decoration: none;
+  position: relative;
+  transition: border-color 0.35s ease;
+}
+
+.entry:first-child {
+  border-top: 0;
+}
+
+.entry::after {
+  content: '';
+  position: absolute;
+  left: -1.1rem;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--kohaku);
+  opacity: 0;
+  transform: translateY(-50%) scale(0.4);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.entry:hover::after,
+.entry:focus-visible::after {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.entry:hover {
+  border-color: rgba(127, 199, 232, 0.45);
+}
+
+.entry-meta {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: var(--shizumi);
+  white-space: nowrap;
+}
+
+/* (01) (02) — the list really is ordered by recency, so the index says
+   something rather than decorating */
+.entry-index {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: rgba(77, 98, 116, 0.85);
+  font-variant-numeric: tabular-nums;
+}
+
+.entry-right {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+  justify-content: flex-end;
+}
+
+.entry-year {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--shizumi);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* solid vermilion block — one per page, pure punctuation */
+.mark {
+  width: clamp(96px, 12vw, 168px);
+  height: 26px;
+  background: var(--kohaku);
+  margin-bottom: clamp(1.5rem, 4vh, 2.25rem);
+}
+
+.arrow {
+  display: inline-block;
+  margin-left: 0.4em;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reach a:hover .arrow {
+  transform: translate(3px, -3px);
+}
+
+.entry-body h3 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(1.25rem, 1rem + 0.9vw, 1.75rem);
+  line-height: 1.2;
+  margin: 0 0 0.4rem;
+  transition: color 0.3s ease;
+}
+
+.entry:hover .entry-body h3 {
+  color: var(--mizu);
+}
+
+.entry-body p {
+  margin: 0;
+  max-width: 56ch;
+  color: rgba(236, 228, 214, 0.7);
+  font-size: 0.95rem;
+}
+
+.entry-tag {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--shizumi);
+  border: 1px solid rgba(77, 98, 116, 0.4);
+  border-radius: 2px;
+  padding: 0.2rem 0.5rem;
+  white-space: nowrap;
+}
+
+/* ---------------- contact ---------------- */
+
+.reach {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 2.5rem;
+  align-items: baseline;
+  margin-top: 1.75rem;
+}
+
+.reach a {
+  font-family: var(--display);
+  font-size: clamp(1.1rem, 0.95rem + 0.7vw, 1.5rem);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(127, 199, 232, 0.35);
+  padding-bottom: 2px;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.reach a:hover {
+  color: var(--mizu);
+  border-color: var(--mizu);
+}
+
+.colophon {
+  max-width: 78rem;
+  margin: 0 auto;
+  padding-top: 2.5rem;
+  border-top: 1px solid rgba(77, 98, 116, 0.2);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--shizumi);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ---------------- reveal ---------------- */
+
+.rise {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rise.shown {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rise { opacity: 1; transform: none; transition: none; }
+  .pond-scroll i { animation: none; }
+}
+
+@media (max-width: 720px) {
+  .entry {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .entry-tag { justify-self: start; }
+  .waterline { display: none; }
+}
+
+.entry-tag.on {
+  color: var(--kohaku);
+  border-color: transparent;
+  padding-left: 0.9rem;
+  position: relative;
+}
+
+/* a dot, not a bordered chip — three loud chips per screen buries the one
+   place the vermilion is supposed to land */
+.entry-tag.on::before {
+  content: '';
+  position: absolute;
+  left: 0.15rem;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--kohaku);
+  transform: translateY(-50%);
+}

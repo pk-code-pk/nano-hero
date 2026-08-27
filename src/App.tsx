@@ -1,5 +1,5 @@
-import CurseMarkHero from './CurseMarkHero';
+import Site from './Site';
 
 export default function App() {
-  return <CurseMarkHero />;
+  return <Site />;
 }

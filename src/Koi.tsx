@@ -113,6 +113,10 @@ const KOI: KoiSpec[] = [
 
 function OneKoi({ spec, reduced }: { spec: KoiSpec; reduced: boolean }) {
   const group = useRef<THREE.Group>(null);
+  // persistent heading: a fish carries its orientation between frames, it
+  // doesn't re-derive it from instantaneous velocity every frame
+  const heading = useRef<number | null>(null);
+  const bank = useRef(0);
   const { uniforms, parts } = useMemo(() => {
     const uniforms: SwimUniforms = {
       uTime: { value: 0 },
@@ -136,7 +140,7 @@ function OneKoi({ spec, reduced }: { spec: KoiSpec; reduced: boolean }) {
     return { uniforms, parts };
   }, [spec]);
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock }, delta) => {
     const t = reduced ? 0 : clock.getElapsedTime();
     uniforms.uTime.value = t;
     const g = group.current;
@@ -146,7 +150,26 @@ function OneKoi({ spec, reduced }: { spec: KoiSpec; reduced: boolean }) {
     const dx = Math.cos(t * spec.wx + spec.px) * spec.ax * spec.wx;
     const dy = Math.cos(t * spec.wy + spec.py) * spec.ay * spec.wy;
     g.position.set(x, y, spec.z);
-    g.rotation.z = Math.atan2(dy, dx);
+
+    const target = Math.atan2(dy, dx);
+    const cur = heading.current ?? target;
+    // shortest way round, so crossing +-PI doesn't spin the long way
+    const diff = Math.atan2(Math.sin(target - cur), Math.cos(target - cur));
+    // ease toward the target, but never faster than a fish can actually turn.
+    // this is what removes the snap at the path cusps, where velocity reverses
+    // between one frame and the next
+    const dt = Math.min(delta, 0.05);
+    const maxTurn = 1.5 * dt;
+    const step = THREE.MathUtils.clamp(diff * Math.min(1, dt * 2.6), -maxTurn, maxTurn);
+    heading.current = cur + step;
+    g.rotation.z = heading.current;
+
+    // lean into the turn: rotating about the body's long axis shows a little
+    // thickness mid-turn instead of staying a flat cutout
+    const rate = dt > 0 ? step / dt : 0;
+    bank.current += (THREE.MathUtils.clamp(-rate * 0.42, -0.65, 0.65) - bank.current) * Math.min(1, dt * 4);
+    g.rotation.y = bank.current;
+
     g.scale.setScalar(spec.scale);
   });
 
@@ -368,8 +391,21 @@ function Bubbles({ reduced }: { reduced: boolean }) {
     }));
   }, []);
   const geo = useMemo(() => new THREE.CircleGeometry(1, 12), []);
+  // fog:false — bubbles sit ~1000 units out, and fogging them toward the dark
+  // fog colour made them read darker than the water they float in. Additive so
+  // they always come out brighter than whatever is behind them.
   const mat = useMemo(
-    () => new THREE.MeshBasicMaterial({ color: '#cfe8f4' }),
+    () =>
+      new THREE.MeshBasicMaterial({
+        // additive on bright water clips toward white, so the tint has to
+        // start well into the blues to survive the sum
+        color: '#8fd0ff',
+        fog: false,
+        transparent: true,
+        opacity: 0.92,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      }),
     [],
   );
   useFrame(({ clock }) => {
