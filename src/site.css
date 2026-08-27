@@ -82,7 +82,11 @@ a {
 
 .pond {
   position: relative;
+  /* dvh, not svh: the video is centred inside this box, so the box has to be
+     exactly the visible viewport or the wordmark sits below the screen centre
+     once the browser chrome collapses */
   min-height: 100svh;
+  min-height: 100dvh;
   isolation: isolate;
   overflow: hidden;
 }
@@ -99,6 +103,15 @@ a {
   z-index: 2;
   pointer-events: none;
   background: linear-gradient(180deg, transparent, #0a1520 78%, var(--sumi));
+}
+
+/* on a phone the veil covers a third of a much shorter viewport, which drags
+   the optical centre down even when the wordmark is geometrically centred */
+@media (max-width: 760px) {
+  .pond-veil {
+    height: 22dvh;
+    background: linear-gradient(180deg, transparent, rgba(10, 21, 32, 0.9) 72%, var(--sumi));
+  }
 }
 
 .pond-caption {
