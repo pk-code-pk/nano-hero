@@ -9,31 +9,109 @@ type Entry = {
   meta: string; // year + discipline
   tag: string; // what stage it's at
   href?: string;
+  // the number that proves it worked, and how it was measured
+  result?: { value: string; caption: string; delta?: string };
+  spec?: [string, string][];
 };
 
-// TODO(nano): replace these with real projects. Each blurb wants one line:
-// what it is, what you owned, and the number that proves it worked.
+// TODO(nano): replace with real projects. Each one wants a blurb saying what
+// you owned, a result number with how it was measured, and a few real specs.
+// The number is the point — "held 1.8 kN" beats "designed a bracket".
 const WORK: Entry[] = [
   {
     title: 'Project title',
     blurb:
-      'What it does, what you designed, and the result that proves it — a load held, a tolerance hit, a cycle time cut.',
+      'What it is, what constraint made it hard, and what you owned end to end.',
     meta: '2026 · manufacturing',
     tag: 'built',
+    result: {
+      value: '-38%',
+      caption: 'Assembly time per unit',
+      delta: '6m 20s → 3m 55s',
+    },
+    spec: [
+      ['Materials', '6061-T6, PETG'],
+      ['Process', '3-axis mill, printed fixture'],
+      ['Tolerance', '±0.05 mm'],
+      ['Owned', 'Design, fixture, line trial'],
+    ],
   },
   {
     title: 'Project title',
     blurb:
-      'A test rig, a fixture, a linkage. Say what constraint made it hard and what you did about it.',
+      'A test rig, a linkage, a fixture. What you measured and how close the model got.',
     meta: '2025 · design for manufacture',
     tag: 'shipped',
+    result: {
+      value: '1.8 kN',
+      caption: 'Held at failure, 12% over spec',
+      delta: 'Predicted 1.6 kN',
+    },
+    spec: [
+      ['Analysis', 'Static FEA, hand-checked'],
+      ['Validation', 'Instron pull to failure'],
+      ['Iterations', '3'],
+      ['Owned', 'CAD, analysis, test plan'],
+    ],
   },
   {
     title: 'Project title',
     blurb:
-      'Analysis-heavy work belongs here: the model, what you validated it against, and how far off it was.',
+      'Research or coursework belongs here too, as long as something got built and measured.',
     meta: '2025 · test and validation',
     tag: 'in test',
+    result: {
+      value: '0.4 mm',
+      caption: 'Repeatability across 50 cycles',
+      delta: 'Target 1.0 mm',
+    },
+    spec: [
+      ['Instrumentation', 'Dial indicator, load cell'],
+      ['Cycles', '50'],
+      ['Owned', 'Rig design, data reduction'],
+    ],
+  },
+];
+
+// TODO(nano): trim to what you'd defend in an interview.
+const CAPABILITIES: {
+  title: string;
+  body: string;
+  figure: React.ReactNode;
+}[] = [
+  {
+    title: 'Design',
+    body: 'Solid modelling, GD&T, tolerance stacks, and DFM reviews before anything gets cut.',
+    figure: (
+      <svg className="cell-figure" viewBox="0 0 120 90" aria-hidden="true">
+        <rect x="18" y="22" width="66" height="46" />
+        <rect x="30" y="34" width="66" height="46" className="hot" />
+        <path d="M18 14h66M18 10v8M84 10v8" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Manufacturing',
+    body: 'Fixturing, process documentation, and the revisions that come after a part fails in assembly.',
+    figure: (
+      <svg className="cell-figure" viewBox="0 0 120 90" aria-hidden="true">
+        <path d="M14 68h92" />
+        <path d="M28 68V40l14-10h30l14 10v28" />
+        <circle cx="57" cy="46" r="11" className="hot" />
+        <path d="M24 76h68" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Test',
+    body: 'Instrumented rigs, failure analysis, and revising the part until the data agrees with the model.',
+    figure: (
+      <svg className="cell-figure" viewBox="0 0 120 90" aria-hidden="true">
+        <path d="M20 74V16M20 74h84" />
+        <path d="M26 66l20-14 18 8 20-30" className="hot" />
+        <path d="M26 70l20-6 18 4 20-12" />
+      </svg>
+    ),
   },
 ];
 
@@ -289,6 +367,21 @@ export default function Site() {
             come after something fails in assembly.
             </p>
           </div>
+
+          <div className="rules rise" style={{ marginTop: 'clamp(2.5rem, 6vh, 4rem)' }}>
+            <div className="cells">
+              {CAPABILITIES.map((c, i) => (
+                <div className="cell" key={c.title}>
+                  {c.figure}
+                  <span className="eyebrow">
+                    {String(i + 1).padStart(2, '0')} / 03
+                  </span>
+                  <h3 className="cell-title">{c.title}</h3>
+                  <p className="cell-body">{c.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </Band>
 
         <Band label="Selected work" id="work">
@@ -298,37 +391,58 @@ export default function Site() {
                 Things I <i>designed</i>, built, and had to fix.
               </h2>
               <p className="split-note rise">
-                Ordered by recency. Each one lists what it is, what I owned, and
-                the result that proved it worked.
+                Ordered by recency. Each case gives the result first — the
+                number that proves it worked — then how it was measured.
               </p>
             </div>
-            <div className="work">
-              {WORK.map((w, i) => {
-                const Tag = w.href ? 'a' : 'div';
-                return (
-                  <Tag
-                    key={i}
-                    className="entry rise"
-                    {...(w.href
-                      ? { href: w.href, target: '_blank', rel: 'noreferrer' }
-                      : {})}
-                  >
-                    <span className="entry-index">
-                      ({String(i + 1).padStart(2, '0')})
-                    </span>
-                    <span className="entry-body">
-                      <h3>{w.title}</h3>
-                      <p>{w.blurb}</p>
-                    </span>
-                    <span className="entry-right">
-                      <span className="entry-tag">{w.tag}</span>
-                      <span className="entry-year">{w.meta}</span>
-                    </span>
-                  </Tag>
-                );
-              })}
-            </div>
           </div>
+
+          {WORK.map((w, i) => (
+            <div className="rules case rise" key={i}>
+              <div className="cells" style={{ '--cols': 2 } as React.CSSProperties}>
+                <div className="cell">
+                  <span className="eyebrow">
+                    Case {String(i + 1).padStart(2, '0')} · {w.tag}
+                  </span>
+                  <h3 className="cell-title">{w.title}</h3>
+                  <p className="cell-body">{w.blurb}</p>
+                  {w.spec ? (
+                    <dl className="spec">
+                      {w.spec.map(([k, v]) => (
+                        <div key={k}>
+                          <dt>{k}</dt>
+                          <dd>{v}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : null}
+                </div>
+
+                <div className="cell case-result">
+                  {w.result ? (
+                    <div className="result">
+                      {w.result.delta ? (
+                        <span className="result-delta">{w.result.delta}</span>
+                      ) : null}
+                      <strong className="result-value">{w.result.value}</strong>
+                      <p className="result-caption">{w.result.caption}</p>
+                    </div>
+                  ) : null}
+                  <span className="case-meta">{w.meta}</span>
+                  {w.href ? (
+                    <a
+                      className="chamfer"
+                      href={w.href}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <span className="glyph">↳</span> View case
+                    </a>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          ))}
         </Band>
 
         <Band label="Where I've worked" id="experience">
