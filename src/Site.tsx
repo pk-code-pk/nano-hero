@@ -93,31 +93,28 @@ function useReveal() {
   const root = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // scroll progress hairline
+    // Scroll-driven visuals write straight to the two elements that move.
+    // Setting custom properties on documentElement invalidates style for every
+    // element referencing them — a whole-document recalc on each scroll frame,
+    // which on a phone shows up as flashing while you drag.
+    const bar = document.querySelector<HTMLElement>('.progress');
+    const video = document.querySelector<HTMLElement>('.pond-video');
     let frame = 0;
+
     const onScroll = () => {
       if (frame) return;
       frame = requestAnimationFrame(() => {
         frame = 0;
         const max = Math.max(1, document.body.scrollHeight - innerHeight);
-        const root = document.documentElement;
-        root.style.setProperty(
-          '--p',
-          Math.min(1, Math.max(0, scrollY / max)).toFixed(4)
-        );
-        // hero hand-off: the video lags the page as you scroll past it. Capped
-        // at 8% of the viewport, which is what .pond-video's extra height can
-        // absorb without the video's own edge coming into frame. Skipped on
-        // small screens, where moving a full-resolution video layer every
-        // frame costs more than the effect is worth.
-        root.style.setProperty(
-          '--hero-shift',
-          innerWidth < 760
-            ? '0'
-            : Math.min(innerHeight * 0.08, scrollY * 0.16).toFixed(1)
-        );
+        const p = Math.min(1, Math.max(0, scrollY / max));
+        if (bar) bar.style.transform = `scaleX(${p.toFixed(4)})`;
+        if (video && innerWidth >= 760) {
+          const shift = Math.min(innerHeight * 0.08, scrollY * 0.16);
+          video.style.transform = `translate3d(0, ${-shift.toFixed(1)}px, 0)`;
+        }
       });
     };
+
     onScroll();
     addEventListener('scroll', onScroll, { passive: true });
     return () => {

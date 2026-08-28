@@ -684,7 +684,7 @@ a {
   width: 100%;
   z-index: 60;
   background: var(--accent);
-  transform: scaleX(var(--p, 0));
+  transform: scaleX(0);
   transform-origin: 0 50%;
   pointer-events: none;
 }
@@ -1008,7 +1008,6 @@ a {
 .pond-video {
   height: 118%;
   top: -9%;
-  transform: translate3d(0, calc(var(--hero-shift, 0) * -1px), 0);
   will-change: transform;
 }
 
@@ -1280,5 +1279,53 @@ a {
     transform: none;
     height: 100%;
     top: 0;
+  }
+
+  /* Opaque panels. Translucent backgrounds meant every scrolled tile blended
+     the panel over its water layer over the page ground, and over the video in
+     the first panel's case. Same colours, no alpha, nothing to composite. */
+  .panel {
+    background: #0b1621;
+  }
+
+  .panel--d1 {
+    background: #0c2531;
+    /* no overlap on mobile: the video underneath a translucent gradient is the
+       most expensive tile on the page to repaint */
+    margin-top: 0;
+    padding-top: clamp(3rem, 9vh, 6.5rem);
+  }
+
+  .panel--d1::before,
+  .panel--d1::after {
+    mask-image: none;
+  }
+
+  .panel--d2 {
+    background: #0a1c2e;
+  }
+
+  .panel--d3 {
+    background: #0b1730;
+  }
+
+  .panel--d4 {
+    background: #090f24;
+  }
+
+  /* the veil now has to land on the first panel's colour by itself */
+  .pond-veil {
+    background: linear-gradient(180deg, transparent, rgba(10, 30, 42, 0.8) 70%, #0c2531);
+  }
+
+  /* one gradient layer instead of two: repeating gradients over a very tall
+     element are re-rasterised tile by tile as they scroll into view */
+  .panel::after,
+  .footer::after {
+    background: repeating-linear-gradient(
+      180deg,
+      rgba(220, 234, 241, 0.05) 0 1px,
+      transparent 1px 3px
+    );
   }
 }
