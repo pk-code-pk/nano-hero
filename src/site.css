@@ -583,6 +583,9 @@ a {
      once the browser chrome collapses */
   min-height: 100svh;
   min-height: 100dvh;
+  /* dvh is right on desktop, but on iOS it changes continuously as the URL bar
+     collapses — the hero would resize on every scroll frame. Coarse pointers
+     get svh, which is stable. */
   isolation: isolate;
   overflow: hidden;
 }
@@ -1232,4 +1235,50 @@ a {
   text-transform: uppercase;
   color: var(--muted);
   padding-left: 0.18em;
+}
+
+/* ------------------------------------------------------------------ *
+   Mobile compositing. Blend modes, backdrop filters and promoted
+   layers are all cheap on desktop and expensive on phones: iOS
+   re-rasterises a blended layer during scroll, which reads as the
+   background flickering out and back.
+ * ------------------------------------------------------------------ */
+
+@media (pointer: coarse), (max-width: 760px) {
+  .pond {
+    /* stable across URL-bar collapse */
+    min-height: 100svh;
+  }
+
+  /* screen blend + an infinite animation on a full-panel layer is the worst
+     offender; plain compositing at a higher opacity looks near-identical */
+  .panel::before {
+    mix-blend-mode: normal;
+    animation: none;
+    opacity: calc(var(--water-op, 0.14) * 1.7);
+  }
+
+  /* re-blurring the page behind five pills on every scroll frame */
+  .pill,
+  .pond-play {
+    backdrop-filter: none;
+    background: rgba(8, 18, 28, 0.86);
+  }
+
+  .pill--on {
+    background: var(--ink);
+  }
+
+  .pill--accent {
+    background: var(--accent);
+  }
+
+  /* a promoted 2560x1440 video layer is a lot to hold under memory pressure,
+     and the parallax buys little on a small screen */
+  .pond-video {
+    will-change: auto;
+    transform: none;
+    height: 100%;
+    top: 0;
+  }
 }

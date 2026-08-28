@@ -107,10 +107,14 @@ function useReveal() {
         );
         // hero hand-off: the video lags the page as you scroll past it. Capped
         // at 8% of the viewport, which is what .pond-video's extra height can
-        // absorb without the video's own edge coming into frame.
+        // absorb without the video's own edge coming into frame. Skipped on
+        // small screens, where moving a full-resolution video layer every
+        // frame costs more than the effect is worth.
         root.style.setProperty(
           '--hero-shift',
-          Math.min(innerHeight * 0.08, scrollY * 0.16).toFixed(1)
+          innerWidth < 760
+            ? '0'
+            : Math.min(innerHeight * 0.08, scrollY * 0.16).toFixed(1)
         );
       });
     };
